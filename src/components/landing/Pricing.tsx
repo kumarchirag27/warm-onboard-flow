@@ -5,30 +5,32 @@ import { Link } from "react-router-dom";
 const plans = [
   {
     name: "Starter",
-    price: "$49",
-    period: "/mo",
-    description: "For small teams getting started with security",
+    price: "$4",
+    period: "/user/mo",
+    description: "For small teams exploring AI safely",
     features: [
-      "Up to 10 users",
-      "Basic threat detection",
-      "Email alerts",
-      "5 integrations",
-      "Community support",
+      "Up to 25 users",
+      "Real-time paste detection",
+      "Block & warn policies",
+      "ChatGPT & Claude support",
+      "Basic analytics",
+      "Email support",
     ],
     cta: "Start Free Trial",
     featured: false,
   },
   {
-    name: "Pro",
-    price: "$199",
-    period: "/mo",
-    description: "For growing organizations with advanced needs",
+    name: "Business",
+    price: "$12",
+    period: "/user/mo",
+    description: "For security-conscious organizations",
     features: [
-      "Up to 100 users",
-      "AI-powered threat detection",
-      "Automated incident response",
-      "Unlimited integrations",
-      "Compliance dashboard",
+      "Unlimited users",
+      "Custom data patterns (regex)",
+      "Admin dashboard & audit logs",
+      "All AI tools supported",
+      "SOC 2 & GDPR reports",
+      "MDM deployment",
       "Priority support",
     ],
     cta: "Start Free Trial",
@@ -38,14 +40,14 @@ const plans = [
     name: "Enterprise",
     price: "Custom",
     period: "",
-    description: "For large organizations with custom requirements",
+    description: "For large orgs with compliance mandates",
     features: [
-      "Unlimited users",
-      "Custom threat models",
-      "Dedicated SOC team",
-      "On-premise deployment",
-      "Custom SLAs",
-      "24/7 phone support",
+      "Everything in Business",
+      "SSO & SCIM provisioning",
+      "Custom integrations & API",
+      "Dedicated success manager",
+      "On-premise option",
+      "SLA guarantee",
     ],
     cta: "Contact Sales",
     featured: false,
@@ -58,10 +60,10 @@ const Pricing = () => {
       <div className="container mx-auto px-6">
         <div className="mx-auto max-w-2xl text-center mb-16">
           <h2 className="text-3xl font-bold tracking-tight sm:text-4xl mb-4">
-            Simple, <span className="text-gradient">transparent pricing</span>
+            Simple, <span className="text-gradient">per-seat pricing</span>
           </h2>
           <p className="text-muted-foreground text-lg">
-            Start free. Scale as you grow. No hidden fees.
+            14-day free trial on every plan. No credit card required.
           </p>
         </div>
 
