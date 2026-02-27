@@ -1,35 +1,35 @@
-import { Shield, Zap, Eye, Lock, BarChart3, Globe } from "lucide-react";
+import { ShieldAlert, Scan, Bell, BarChart3, Users, Plug } from "lucide-react";
 
 const features = [
   {
-    icon: Shield,
-    title: "Threat Detection",
-    description: "AI-powered real-time threat monitoring that identifies and neutralizes attacks before they impact your systems.",
+    icon: Scan,
+    title: "Real-Time Paste Detection",
+    description: "Scans clipboard content the instant your team pastes into ChatGPT, Claude, Gemini, or any web-based AI tool — before the data ever leaves the browser.",
   },
   {
-    icon: Zap,
-    title: "Automated Response",
-    description: "Instant automated incident response with customizable playbooks that reduce mean-time-to-resolution by 90%.",
+    icon: ShieldAlert,
+    title: "Sensitive Data Classification",
+    description: "Automatically identifies API keys, passwords, credit card numbers, SSNs, internal code, and custom patterns you define — with zero false-positive fatigue.",
   },
   {
-    icon: Eye,
-    title: "Continuous Monitoring",
-    description: "24/7 surveillance across your entire infrastructure with intelligent alerting that eliminates false positives.",
+    icon: Bell,
+    title: "Block, Warn, or Log",
+    description: "Choose your policy per data type: hard-block the paste, show a warning to the user, or silently log it for compliance review.",
   },
   {
-    icon: Lock,
-    title: "Zero Trust Access",
-    description: "Granular identity-based access controls with continuous verification for every user, device, and application.",
+    icon: Users,
+    title: "Admin Dashboard",
+    description: "Centralized control for security teams. See who pasted what, where, and when. Roll out policies across your entire org in one click.",
   },
   {
     icon: BarChart3,
-    title: "Compliance Dashboard",
-    description: "Real-time compliance tracking for SOC 2, HIPAA, GDPR, and ISO 27001 with automated evidence collection.",
+    title: "Analytics & Reporting",
+    description: "Track data leak trends, top offenders, most-used AI tools, and export audit-ready compliance reports for SOC 2 and GDPR.",
   },
   {
-    icon: Globe,
-    title: "Global Edge Network",
-    description: "Distributed security infrastructure across 40+ regions ensuring low-latency protection worldwide.",
+    icon: Plug,
+    title: "Seamless Deployment",
+    description: "Install via Chrome Web Store or push through MDM. Lightweight extension with no impact on browsing performance.",
   },
 ];
 
@@ -39,10 +39,10 @@ const Features = () => {
       <div className="container mx-auto px-6">
         <div className="mx-auto max-w-2xl text-center mb-16">
           <h2 className="text-3xl font-bold tracking-tight sm:text-4xl mb-4">
-            Security that <span className="text-gradient">scales with you</span>
+            Your team uses AI. <span className="text-gradient">Keep it safe.</span>
           </h2>
           <p className="text-muted-foreground text-lg">
-            Everything you need to protect, detect, and respond — built for modern infrastructure.
+            SentraShield sits between your employees and AI tools — catching sensitive data before it becomes a breach.
           </p>
         </div>
 
