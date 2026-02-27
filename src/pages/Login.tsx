@@ -22,13 +22,13 @@ const Login = () => {
       <div className="relative z-10 w-full max-w-md px-6">
         <Link to="/" className="mb-8 flex items-center justify-center gap-2">
           <Shield className="h-8 w-8 text-primary" />
-          <span className="text-2xl font-bold tracking-tight">SentraShield</span>
+          <span className="text-2xl font-bold tracking-tight">AI-DLP</span>
         </Link>
 
         <div className="rounded-xl border border-border/50 card-gradient p-8">
           <div className="mb-6 text-center">
             <h1 className="text-2xl font-bold mb-1">Welcome back</h1>
-            <p className="text-sm text-muted-foreground">Log in to your SentraShield dashboard</p>
+            <p className="text-sm text-muted-foreground">Log in to your AI-DLP dashboard</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
