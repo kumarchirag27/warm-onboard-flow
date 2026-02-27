@@ -42,7 +42,7 @@ const Features = () => {
             Your team uses AI. <span className="text-gradient">Keep it safe.</span>
           </h2>
           <p className="text-muted-foreground text-lg">
-            AI-DLP sits between your employees and AI tools — catching sensitive data before it becomes a breach.
+            AI Shield sits between your employees and AI tools — catching sensitive data before it becomes a breach.
           </p>
         </div>
 

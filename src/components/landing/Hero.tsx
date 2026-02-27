@@ -27,7 +27,7 @@ const Hero = () => {
           </h1>
 
           <p className="mx-auto mb-10 max-w-2xl text-lg text-muted-foreground leading-relaxed">
-            AI-DLP detects passwords, API keys, PII, and confidential data the moment
+            AI Shield detects passwords, API keys, PII, and confidential data the moment
             your team pastes it into ChatGPT, Claude, or any AI assistant — and blocks it before it's sent.
           </p>
 
