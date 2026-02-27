@@ -37,8 +37,8 @@ const Features = () => {
   return (
     <section id="features" className="relative py-24 lg:py-32">
       <div className="container mx-auto px-6">
-        <div className="mx-auto max-w-2xl text-center mb-16">
-          <h2 className="text-3xl font-bold tracking-tight sm:text-4xl mb-4">
+        <div className="mx-auto max-w-2xl text-center mb-16 accent-line-center">
+          <h2 className="text-3xl font-bold tracking-wide sm:text-4xl mb-4 uppercase">
             Your team uses AI. <span className="text-gradient">Keep it safe.</span>
           </h2>
           <p className="text-muted-foreground text-lg">
@@ -50,7 +50,7 @@ const Features = () => {
           {features.map((feature) => (
             <div
               key={feature.title}
-              className="group relative rounded-xl border border-border/50 card-gradient p-6 transition-all duration-300 hover:border-primary/30 hover:glow"
+              className="group relative rounded border border-border/50 card-gradient p-6 transition-all duration-300 hover:border-primary/40 hover:glow"
             >
               <div className="mb-4 inline-flex rounded-lg bg-primary/10 p-2.5 text-primary">
                 <feature.icon className="h-5 w-5" />
