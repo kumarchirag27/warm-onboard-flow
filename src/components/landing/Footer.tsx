@@ -7,7 +7,7 @@ const Footer = () => {
         <div className="flex flex-col items-center justify-between gap-6 md:flex-row">
           <div className="flex items-center gap-2">
             <Shield className="h-5 w-5 text-primary" />
-            <span className="font-semibold">SentraShield</span>
+            <span className="font-semibold">AI-DLP</span>
           </div>
 
           <div className="flex gap-6 text-sm text-muted-foreground">
@@ -18,7 +18,7 @@ const Footer = () => {
           </div>
 
           <p className="text-sm text-muted-foreground">
-            © 2026 SentraShield. All rights reserved.
+            © 2026 AI-DLP. All rights reserved.
           </p>
         </div>
       </div>
