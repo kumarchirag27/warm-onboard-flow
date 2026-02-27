@@ -58,8 +58,8 @@ const Pricing = () => {
   return (
     <section id="pricing" className="relative py-24 lg:py-32">
       <div className="container mx-auto px-6">
-        <div className="mx-auto max-w-2xl text-center mb-16">
-          <h2 className="text-3xl font-bold tracking-tight sm:text-4xl mb-4">
+        <div className="mx-auto max-w-2xl text-center mb-16 accent-line-center">
+          <h2 className="text-3xl font-bold tracking-wide sm:text-4xl mb-4 uppercase">
             Simple, <span className="text-gradient">per-seat pricing</span>
           </h2>
           <p className="text-muted-foreground text-lg">
@@ -71,10 +71,10 @@ const Pricing = () => {
           {plans.map((plan) => (
             <div
               key={plan.name}
-              className={`relative rounded-xl border p-8 transition-all duration-300 ${
+              className={`relative rounded border p-8 transition-all duration-300 ${
                 plan.featured
                   ? "border-primary/50 card-gradient glow scale-105"
-                  : "border-border/50 card-gradient hover:border-border"
+                  : "border-border/50 card-gradient hover:border-primary/30 hover:glow"
               }`}
             >
               {plan.featured && (

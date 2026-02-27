@@ -15,12 +15,12 @@ const Hero = () => {
 
       <div className="container relative z-10 mx-auto px-6 pt-24 pb-16">
         <div className="mx-auto max-w-4xl text-center">
-          <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 text-sm text-primary">
+          <div className="mb-8 inline-flex items-center gap-2 rounded border border-primary/20 bg-primary/5 px-4 py-1.5 text-sm text-primary font-mono tracking-wider">
             <Chrome className="h-3.5 w-3.5" />
             <span>Browser Extension for Teams</span>
           </div>
 
-          <h1 className="mb-6 text-5xl font-extrabold leading-[1.1] tracking-tight sm:text-6xl lg:text-7xl">
+          <h1 className="mb-6 text-5xl font-bold leading-[1.1] tracking-wide sm:text-6xl lg:text-7xl uppercase">
             Stop sensitive data from
             <br />
             <span className="text-gradient">leaking into AI tools</span>
