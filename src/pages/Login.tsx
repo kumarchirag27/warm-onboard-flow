@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Shield, CheckCircle } from "lucide-react";
+import { CheckCircle } from "lucide-react";
 import { Link } from "react-router-dom";
 import { supabase, DASHBOARD_URL } from "@/lib/supabase";
 
@@ -72,9 +72,8 @@ const Login = () => {
       <div className="relative z-10 w-full max-w-md px-6">
 
         {/* Logo */}
-        <Link to="/" className="mb-8 flex items-center justify-center gap-3">
-          <Shield className="h-8 w-8 text-primary" />
-          <span className="text-2xl font-bold tracking-widest uppercase">SentraShield</span>
+        <Link to="/" className="mb-8 flex items-center justify-center">
+          <img src="/logo.png" alt="SentraShield" className="h-11 w-auto" />
         </Link>
 
         {/* Card */}

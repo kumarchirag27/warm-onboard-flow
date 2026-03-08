@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Shield, ArrowRight, CheckCircle, ExternalLink } from "lucide-react";
+import { ArrowRight, CheckCircle, ExternalLink } from "lucide-react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 
@@ -149,9 +149,8 @@ const Signup = () => {
       <div className="absolute inset-0 bg-glow pointer-events-none" />
 
       <div className="relative z-10 w-full max-w-md px-6">
-        <Link to="/" className="mb-8 flex items-center justify-center gap-3">
-          <Shield className="h-8 w-8 text-primary" />
-          <span className="text-2xl font-bold tracking-widest uppercase">SentraShield</span>
+        <Link to="/" className="mb-8 flex items-center justify-center">
+          <img src="/logo.png" alt="SentraShield" className="h-11 w-auto" />
         </Link>
 
         <div className="rounded-xl border border-border/50 card-gradient p-8">

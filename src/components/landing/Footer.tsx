@@ -1,13 +1,10 @@
-import { Shield } from "lucide-react";
-
 const Footer = () => {
   return (
     <footer className="border-t border-border/50 py-12">
       <div className="container mx-auto px-6">
         <div className="flex flex-col items-center justify-between gap-6 md:flex-row">
-          <div className="flex items-center gap-2">
-            <Shield className="h-5 w-5 text-primary" />
-            <span className="font-semibold">AI Shield</span>
+          <div className="flex items-center">
+            <img src="/logo.png" alt="SentraShield" className="h-7 w-auto" />
           </div>
 
           <div className="flex gap-6 text-sm text-muted-foreground">
@@ -18,7 +15,7 @@ const Footer = () => {
           </div>
 
           <p className="text-sm text-muted-foreground">
-            © 2026 AI Shield. All rights reserved.
+            © 2026 SentraShield. All rights reserved.
           </p>
         </div>
       </div>
