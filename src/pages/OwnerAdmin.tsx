@@ -34,6 +34,25 @@ type Filter = 'all' | 'pending' | 'approved' | 'rejected';
 // ─────────────────────────────────────────────────────────────────
 const SESSION_KEY = 'sentra_admin_token';
 
+/**
+ * Read the admin token synchronously — used as a lazy useState initializer
+ * so the component starts in the correct auth state with zero flash.
+ *
+ * Priority:
+ *   1. #token=…  (hash fragment — new secure format, never logged by server)
+ *   2. ?token=…  (query param  — backward compat for old email links)
+ *   3. sessionStorage (already authenticated this browser session)
+ */
+function readToken(): string {
+  const hashToken = new URLSearchParams(window.location.hash.slice(1)).get('token');
+  if (hashToken) { sessionStorage.setItem(SESSION_KEY, hashToken); return hashToken; }
+
+  const queryToken = new URLSearchParams(window.location.search).get('token');
+  if (queryToken) { sessionStorage.setItem(SESSION_KEY, queryToken); return queryToken; }
+
+  return sessionStorage.getItem(SESSION_KEY) ?? '';
+}
+
 function timeAgo(iso: string): string {
   const diff = Date.now() - new Date(iso).getTime();
   const m = Math.floor(diff / 60000);
@@ -62,10 +81,10 @@ function StatusBadge({ status }: { status: Org['status'] }) {
 // Main Component
 // ─────────────────────────────────────────────────────────────────
 const OwnerAdmin = () => {
-  const [authed, setAuthed]           = useState(false);
+  const [adminToken, setAdminToken]   = useState<string>(readToken);           // lazy — runs once
+  const [authed, setAuthed]           = useState<boolean>(() => !!readToken()); // lazy — runs once
   const [tokenInput, setTokenInput]   = useState('');
   const [tokenError, setTokenError]   = useState('');
-  const [adminToken, setAdminToken]   = useState('');
 
   const [orgs, setOrgs]               = useState<Org[]>([]);
   const [stats, setStats]             = useState<Stats | null>(null);
@@ -76,36 +95,16 @@ const OwnerAdmin = () => {
   const [rejectTarget, setRejectTarget] = useState<Org | null>(null);
   const [rejectReason, setRejectReason] = useState('Domain could not be verified.');
 
-  // ── Restore session ──────────────────────────────────────────
+  // ── Clean up token from URL bar after it has been read into state ──
+  //    readToken() already saved the token to sessionStorage synchronously,
+  //    so we just need to strip it from the address bar on mount.
   useEffect(() => {
-    // 1. Check hash fragment (#token=…) — new secure format.
-    //    Hash fragments are NEVER sent to the server and never appear in logs.
-    const hash = window.location.hash.slice(1); // strip leading #
-    const hashParams = new URLSearchParams(hash);
-    const hashToken = hashParams.get('token');
-    if (hashToken) {
-      sessionStorage.setItem(SESSION_KEY, hashToken);
-      window.history.replaceState({}, '', '/admin'); // strip hash from address bar
-      setAdminToken(hashToken);
-      setAuthed(true);
-      return;
+    const hasTokenInUrl =
+      window.location.hash.includes('token=') ||
+      window.location.search.includes('token=');
+    if (hasTokenInUrl) {
+      window.history.replaceState({}, '', window.location.pathname);
     }
-
-    // 2. Backward-compat: also accept ?token= query param (old email links).
-    //    Still clean the URL after reading so it's not left in the address bar.
-    const queryParams = new URLSearchParams(window.location.search);
-    const queryToken = queryParams.get('token');
-    if (queryToken) {
-      sessionStorage.setItem(SESSION_KEY, queryToken);
-      window.history.replaceState({}, '', '/admin'); // strip ?token= from address bar
-      setAdminToken(queryToken);
-      setAuthed(true);
-      return;
-    }
-
-    // 3. Restore from sessionStorage (already authenticated this session)
-    const saved = sessionStorage.getItem(SESSION_KEY);
-    if (saved) { setAdminToken(saved); setAuthed(true); }
   }, []);
 
   // ── Show toast ───────────────────────────────────────────────
