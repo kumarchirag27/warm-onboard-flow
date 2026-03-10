@@ -31,6 +31,7 @@ export default async function handler(req, res) {
   }
 
   const RESEND_API_KEY = process.env.RESEND_API_KEY;
+  const RESEND_FROM    = process.env.RESEND_FROM    || 'SentraShield <noreply@sentrashield.com>';
   const OWNER_EMAIL    = process.env.OWNER_EMAIL    || 'admin@sentrashield.com';
   const ADMIN_TOKEN    = process.env.ADMIN_TOKEN    || '';
   const SITE_URL       = process.env.SITE_URL       || 'https://sentrashield.com';
@@ -128,7 +129,7 @@ export default async function handler(req, res) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from:    'SentraShield <noreply@sentrashield.com>',
+        from:    RESEND_FROM,
         to:      [OWNER_EMAIL],
         subject: `New trial signup: ${orgName} (${domain})`,
         html,

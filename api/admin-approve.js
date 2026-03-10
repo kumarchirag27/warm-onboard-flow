@@ -31,6 +31,7 @@ export default async function handler(req, res) {
   const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_KEY || '';
   const SUPABASE_ANON_KEY    = process.env.SUPABASE_ANON_KEY    || '';
   const RESEND_API_KEY       = process.env.RESEND_API_KEY       || '';
+  const RESEND_FROM          = process.env.RESEND_FROM          || 'SentraShield <noreply@sentrashield.com>';
 
   if (!SUPABASE_SERVICE_KEY) {
     return res.status(500).json({ error: 'SUPABASE_SERVICE_KEY not configured' });
@@ -140,7 +141,7 @@ export default async function handler(req, res) {
           'Content-Type':  'application/json',
         },
         body: JSON.stringify({
-          from:    'SentraShield <noreply@sentrashield.com>',
+          from:    RESEND_FROM,
           to:      [org.admin_email],
           subject: `Your SentraShield account is approved — welcome, ${org.name}!`,
           html,
