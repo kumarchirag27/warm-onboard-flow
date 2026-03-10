@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import {
   CheckCircle, XCircle, Clock, RefreshCw,
   Building2, Briefcase, Mail, Globe, Users, ShieldAlert,
-  AlertTriangle, Lock, LogOut,
+  AlertTriangle, Lock, LogOut, ExternalLink,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -397,8 +397,20 @@ const OwnerAdmin = () => {
                   </div>
                 )}
 
-                <div className="mt-2 flex items-center gap-3 text-xs text-muted-foreground/50">
-                  <span className="font-mono text-xs">{org.slug}.ai-dlp.sentrashield.com</span>
+                <div className="mt-2 flex items-center gap-3 text-xs text-muted-foreground/50 flex-wrap">
+                  {org.status === 'approved' ? (
+                    <a
+                      href={`https://${org.slug}.ai-dlp.sentrashield.com/dashboard`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="font-mono text-xs text-primary/70 hover:text-primary flex items-center gap-1 transition-colors"
+                    >
+                      {org.slug}.ai-dlp.sentrashield.com
+                      <ExternalLink className="h-2.5 w-2.5" />
+                    </a>
+                  ) : (
+                    <span className="font-mono text-xs">{org.slug}.ai-dlp.sentrashield.com</span>
+                  )}
                   {org.seats_used !== null && (
                     <span className="flex items-center gap-1">
                       <Users className="h-3 w-3" /> {org.seats_used} seat{org.seats_used !== 1 ? 's' : ''}
@@ -408,30 +420,44 @@ const OwnerAdmin = () => {
                 </div>
               </div>
 
-              {/* Right: action buttons (only for pending) */}
-              {org.status === 'pending' && (
-                <div className="flex flex-col gap-2 shrink-0">
-                  <button
-                    onClick={() => handleApprove(org)}
-                    disabled={!!actionId}
+              {/* Right: action buttons */}
+              <div className="flex flex-col gap-2 shrink-0">
+                {org.status === 'approved' && (
+                  <a
+                    href={`https://${org.slug}.ai-dlp.sentrashield.com/dashboard`}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold
-                      bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/25
-                      transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      bg-primary/10 hover:bg-primary/20 text-primary border border-primary/25
+                      transition-colors"
                   >
-                    <CheckCircle className="h-3.5 w-3.5" />
-                    {actionId === org.id ? 'Working…' : 'Approve'}
-                  </button>
-                  <button
-                    onClick={() => { setRejectTarget(org); }}
-                    disabled={!!actionId}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold
-                      bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/25
-                      transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    <XCircle className="h-3.5 w-3.5" /> Reject
-                  </button>
-                </div>
-              )}
+                    <ExternalLink className="h-3.5 w-3.5" /> Open Dashboard
+                  </a>
+                )}
+                {org.status === 'pending' && (
+                  <>
+                    <button
+                      onClick={() => handleApprove(org)}
+                      disabled={!!actionId}
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold
+                        bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/25
+                        transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <CheckCircle className="h-3.5 w-3.5" />
+                      {actionId === org.id ? 'Working…' : 'Approve'}
+                    </button>
+                    <button
+                      onClick={() => { setRejectTarget(org); }}
+                      disabled={!!actionId}
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold
+                        bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/25
+                        transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <XCircle className="h-3.5 w-3.5" /> Reject
+                    </button>
+                  </>
+                )}
+              </div>
             </div>
           </div>
         ))}
