@@ -78,12 +78,15 @@ const OwnerAdmin = () => {
 
   // ── Restore session ──────────────────────────────────────────
   useEffect(() => {
-    // Check URL param first (direct link from owner notification email)
-    const params = new URLSearchParams(window.location.search);
-    const urlToken = params.get('token');
+    // Check hash fragment first (direct link from owner notification email).
+    // Hash fragments (#token=…) are NEVER sent to the server and never appear
+    // in Vercel/Cloudflare access logs — much safer than ?token= query params.
+    const hash = window.location.hash.slice(1); // strip leading #
+    const hashParams = new URLSearchParams(hash);
+    const urlToken = hashParams.get('token');
     if (urlToken) {
       sessionStorage.setItem(SESSION_KEY, urlToken);
-      // Clean token from URL
+      // Remove the hash so the token doesn't sit in the address bar
       window.history.replaceState({}, '', '/admin');
       setAdminToken(urlToken);
       setAuthed(true);

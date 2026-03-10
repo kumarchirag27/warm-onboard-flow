@@ -42,7 +42,10 @@ export default async function handler(req, res) {
     return res.status(200).json({ ok: true, skipped: true });
   }
 
-  const adminUrl = `${SITE_URL}/admin?token=${encodeURIComponent(ADMIN_TOKEN)}`;
+  // Use hash fragment (#token=) instead of query string (?token=) so the secret
+  // never reaches the server, never appears in Vercel access logs, and is stripped
+  // from browser history automatically by the SPA cleanup below.
+  const adminUrl = `${SITE_URL}/admin#token=${encodeURIComponent(ADMIN_TOKEN)}`;
 
   // Risk flags for the email
   const flags = [];
