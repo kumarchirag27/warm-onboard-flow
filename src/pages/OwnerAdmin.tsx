@@ -78,20 +78,32 @@ const OwnerAdmin = () => {
 
   // ── Restore session ──────────────────────────────────────────
   useEffect(() => {
-    // Check hash fragment first (direct link from owner notification email).
-    // Hash fragments (#token=…) are NEVER sent to the server and never appear
-    // in Vercel/Cloudflare access logs — much safer than ?token= query params.
+    // 1. Check hash fragment (#token=…) — new secure format.
+    //    Hash fragments are NEVER sent to the server and never appear in logs.
     const hash = window.location.hash.slice(1); // strip leading #
     const hashParams = new URLSearchParams(hash);
-    const urlToken = hashParams.get('token');
-    if (urlToken) {
-      sessionStorage.setItem(SESSION_KEY, urlToken);
-      // Remove the hash so the token doesn't sit in the address bar
-      window.history.replaceState({}, '', '/admin');
-      setAdminToken(urlToken);
+    const hashToken = hashParams.get('token');
+    if (hashToken) {
+      sessionStorage.setItem(SESSION_KEY, hashToken);
+      window.history.replaceState({}, '', '/admin'); // strip hash from address bar
+      setAdminToken(hashToken);
       setAuthed(true);
       return;
     }
+
+    // 2. Backward-compat: also accept ?token= query param (old email links).
+    //    Still clean the URL after reading so it's not left in the address bar.
+    const queryParams = new URLSearchParams(window.location.search);
+    const queryToken = queryParams.get('token');
+    if (queryToken) {
+      sessionStorage.setItem(SESSION_KEY, queryToken);
+      window.history.replaceState({}, '', '/admin'); // strip ?token= from address bar
+      setAdminToken(queryToken);
+      setAuthed(true);
+      return;
+    }
+
+    // 3. Restore from sessionStorage (already authenticated this session)
     const saved = sessionStorage.getItem(SESSION_KEY);
     if (saved) { setAdminToken(saved); setAuthed(true); }
   }, []);
