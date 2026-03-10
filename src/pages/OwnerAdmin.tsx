@@ -393,7 +393,7 @@ const OwnerAdmin = () => {
                 )}
 
                 <div className="mt-2 flex items-center gap-3 text-xs text-muted-foreground/50">
-                  <span className="font-mono text-xs">{org.slug}.secai.sentrashield.com</span>
+                  <span className="font-mono text-xs">{org.slug}.ai-dlp.sentrashield.com</span>
                   {org.seats_used !== null && (
                     <span className="flex items-center gap-1">
                       <Users className="h-3 w-3" /> {org.seats_used} seat{org.seats_used !== 1 ? 's' : ''}

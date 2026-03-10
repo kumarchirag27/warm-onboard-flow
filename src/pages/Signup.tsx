@@ -6,7 +6,7 @@ import { ArrowRight, Clock, Shield, AlertCircle } from "lucide-react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 
-const BASE_DOMAIN = 'secai.sentrashield.com';
+const BASE_DOMAIN = 'ai-dlp.sentrashield.com';
 
 // ─────────────────────────────────────────────────────────────
 // Security: block known disposable / throwaway email providers

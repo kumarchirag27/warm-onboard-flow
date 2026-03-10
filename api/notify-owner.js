@@ -88,7 +88,7 @@ export default async function handler(req, res) {
         </tr>
         <tr style="border-top:1px solid #2a2a40;">
           <td style="padding:8px 0;color:#888;font-size:12px;font-weight:600;">Slug</td>
-          <td style="padding:8px 0;color:#818cf8;font-size:12px;font-family:monospace;">${esc(slug)}.secai.sentrashield.com</td>
+          <td style="padding:8px 0;color:#818cf8;font-size:12px;font-family:monospace;">${esc(slug)}.ai-dlp.sentrashield.com</td>
         </tr>
       </table>
 

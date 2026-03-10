@@ -10,7 +10,7 @@
 //   SUPABASE_ANON_KEY      — anon key (for sending magic link)
 //   RESEND_API_KEY         — for sending approval notification email
 
-const BASE_DOMAIN = 'secai.sentrashield.com';
+const BASE_DOMAIN = 'ai-dlp.sentrashield.com';
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
