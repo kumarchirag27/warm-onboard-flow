@@ -65,9 +65,13 @@ export default async function handler(req, res) {
           'Prefer':        'return=minimal',
         },
         body: JSON.stringify({
-          active:      true,
-          status:      'approved',
-          approved_at: new Date().toISOString(),
+          active:         true,
+          status:         'approved',
+          approved_at:    new Date().toISOString(),
+          // 14-day trial window — cron-trial-check.js enforces expiry daily
+          trial_ends_at:  new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(),
+          trial_warned_7d: false,
+          trial_warned_1d: false,
         }),
       }
     );
@@ -79,6 +83,8 @@ export default async function handler(req, res) {
 
     // ③ Send magic link to customer via Supabase Admin Auth API
     const dashboardUrl = `https://${org.slug}.${BASE_DOMAIN}/dashboard`;
+    const trialEndsAt  = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000);
+    const trialEndStr  = trialEndsAt.toLocaleDateString('en-GB', { day:'numeric', month:'long', year:'numeric' });
     if (SUPABASE_ANON_KEY || SUPABASE_SERVICE_KEY) {
       try {
         await fetch(`${SUPABASE_URL}/auth/v1/magiclink`, {
@@ -120,6 +126,10 @@ export default async function handler(req, res) {
       <div style="background:#0a1a0a;border:1px solid #1a3a2a;border-radius:8px;padding:14px 16px;margin:20px 0;">
         <p style="margin:0 0 4px;color:#6b7280;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1px;">Your Dashboard URL</p>
         <a href="${dashboardUrl}" style="color:#34d399;font-family:monospace;font-size:13px;word-break:break-all;">${dashboardUrl}</a>
+      </div>
+      <div style="background:#0a0f1a;border:1px solid #1a2a3a;border-radius:8px;padding:14px 16px;margin:20px 0;">
+        <p style="margin:0 0 4px;color:#6b7280;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1px;">⏰ Trial Period</p>
+        <p style="margin:0;color:#93c5fd;font-size:13px;">14 days free · Expires <strong>${trialEndStr}</strong></p>
       </div>
       <p style="color:#6b7280;font-size:12px;line-height:1.6;">
         If you don't see the magic link email, check your spam folder or visit your dashboard URL and request a new one.
