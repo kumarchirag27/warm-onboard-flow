@@ -65,7 +65,7 @@ const Signup = () => {
   const [error, setError]     = useState('');
   const [domainWarning, setDomainWarning] = useState('');
   const [formData, setFormData] = useState({
-    fullName: '', email: '', orgName: '', companyDomain: '',
+    fullName: '', jobTitle: '', email: '', orgName: '', companyDomain: '',
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -148,6 +148,7 @@ const Signup = () => {
         .insert({
           name:        formData.orgName,
           full_name:   formData.fullName,
+          job_title:   formData.jobTitle,
           admin_email: formData.email,
           domain,
           api_key:     generateApiKey(),
@@ -165,12 +166,13 @@ const Signup = () => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          orgName:       formData.orgName,
-          fullName:      formData.fullName,
-          email:         formData.email,
+          orgName:        formData.orgName,
+          fullName:       formData.fullName,
+          jobTitle:       formData.jobTitle,
+          email:          formData.email,
           domain,
           slug,
-          domainMismatch: !emailMatchesDomain(formData.email, domain),
+          domainMismatch:  !emailMatchesDomain(formData.email, domain),
           isPersonalEmail: PERSONAL_DOMAINS.has(formData.email.split('@')[1]),
         }),
       }).catch(() => {});
@@ -286,6 +288,14 @@ const Signup = () => {
                   <Input
                     id="fullName" name="fullName" value={formData.fullName}
                     onChange={handleChange} placeholder="Jane Doe"
+                    required className="bg-background/50"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="jobTitle">Job title</Label>
+                  <Input
+                    id="jobTitle" name="jobTitle" value={formData.jobTitle}
+                    onChange={handleChange} placeholder="CISO, IT Manager, Security Engineer…"
                     required className="bg-background/50"
                   />
                 </div>

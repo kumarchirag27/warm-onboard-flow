@@ -22,7 +22,7 @@ export default async function handler(req, res) {
   }
 
   const {
-    orgName, fullName, email, domain, slug,
+    orgName, fullName, jobTitle, email, domain, slug,
     domainMismatch = false, isPersonalEmail = false,
   } = req.body || {};
 
@@ -81,6 +81,10 @@ export default async function handler(req, res) {
         <tr style="border-top:1px solid #2a2a40;">
           <td style="padding:8px 0;color:#888;font-size:12px;font-weight:600;">Contact</td>
           <td style="padding:8px 0;color:#f0f0ff;font-size:13px;">${esc(fullName)} &lt;${esc(email)}&gt;</td>
+        </tr>
+        <tr style="border-top:1px solid #2a2a40;">
+          <td style="padding:8px 0;color:#888;font-size:12px;font-weight:600;">Job Title</td>
+          <td style="padding:8px 0;color:#f0f0ff;font-size:13px;">${esc(jobTitle || '—')}</td>
         </tr>
         <tr style="border-top:1px solid #2a2a40;">
           <td style="padding:8px 0;color:#888;font-size:12px;font-weight:600;">Domain</td>

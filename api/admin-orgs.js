@@ -29,7 +29,7 @@ export default async function handler(req, res) {
   try {
     // Fetch all orgs, ordered by newest first
     const response = await fetch(
-      `${SUPABASE_URL}/rest/v1/organizations?select=id,name,full_name,admin_email,domain,slug,plan,active,status,policy,seats_used,created_at&order=created_at.desc`,
+      `${SUPABASE_URL}/rest/v1/organizations?select=id,name,full_name,job_title,admin_email,domain,slug,plan,active,status,policy,seats_used,created_at&order=created_at.desc`,
       {
         headers: {
           'apikey':        SUPABASE_SERVICE_KEY,

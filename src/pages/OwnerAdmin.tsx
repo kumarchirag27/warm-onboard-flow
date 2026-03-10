@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import {
   CheckCircle, XCircle, Clock, RefreshCw,
-  Building2, Mail, Globe, Users, ShieldAlert,
+  Building2, Briefcase, Mail, Globe, Users, ShieldAlert,
   AlertTriangle, Lock, LogOut,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -14,6 +14,7 @@ interface Org {
   id: string;
   name: string;
   full_name: string | null;
+  job_title: string | null;
   admin_email: string;
   domain: string;
   slug: string;
@@ -369,10 +370,14 @@ const OwnerAdmin = () => {
                   <span className="text-xs text-muted-foreground/60 ml-auto">{timeAgo(org.created_at)}</span>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 mt-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-3">
                   <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
                     <Building2 className="h-3.5 w-3.5 shrink-0" />
                     <span className="truncate">{org.full_name || '—'}</span>
+                  </div>
+                  <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                    <Briefcase className="h-3.5 w-3.5 shrink-0" />
+                    <span className="truncate">{org.job_title || '—'}</span>
                   </div>
                   <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
                     <Mail className="h-3.5 w-3.5 shrink-0" />
