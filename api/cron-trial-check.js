@@ -96,6 +96,80 @@ function trialWarningHtml(org, daysLeft, dashboardUrl, upgradeUrl) {
 </div></body></html>`;
 }
 
+// ── Subscription email helpers ────────────────────────────────────────────────
+function subscriptionExpiredHtml(org, dashboardUrl, renewUrl) {
+  return `<!DOCTYPE html><html><head><meta charset="UTF-8"></head>
+<body style="margin:0;padding:0;background:#0f0f1a;font-family:'Segoe UI',sans-serif;">
+<div style="max-width:520px;margin:32px auto;background:#12121f;border:1px solid #3a1a1a;border-radius:12px;overflow:hidden;">
+  <div style="background:linear-gradient(135deg,#1a0505,#1a0a0a);padding:24px 28px;border-bottom:1px solid #3a1a1a;">
+    <p style="margin:0;font-size:11px;font-weight:700;letter-spacing:2px;color:#f87171;text-transform:uppercase;">SentraShield</p>
+    <h1 style="margin:8px 0 0;font-size:20px;font-weight:700;color:#fff5f5;">Your subscription has expired</h1>
+  </div>
+  <div style="padding:24px 28px;">
+    <p style="color:#cbd5e1;font-size:14px;line-height:1.7;">
+      Hi ${esc(org.name)},<br><br>
+      Your SentraShield subscription has expired and DLP enforcement has been <strong style="color:#f87171;">paused</strong> on your employees' devices.
+    </p>
+    <div style="background:#1a0505;border:1px solid #3a1a1a;border-radius:8px;padding:14px 18px;margin:20px 0;">
+      <p style="margin:0 0 6px;color:#f87171;font-size:13px;font-weight:700;">⚠️ Your data is no longer protected</p>
+      <p style="margin:0;color:#fca5a5;font-size:12px;line-height:1.6;">Sensitive data pasted into ChatGPT, Claude, Gemini and other AI tools is no longer being scanned or blocked.</p>
+    </div>
+    <p style="color:#cbd5e1;font-size:14px;line-height:1.7;">Contact us to renew your subscription and restore protection immediately.</p>
+    <div style="margin-top:20px;">
+      <a href="${esc(renewUrl)}" style="display:inline-block;background:#6366f1;color:#fff;text-decoration:none;padding:12px 24px;border-radius:8px;font-weight:700;font-size:13px;margin-right:10px;">
+        Renew Now →
+      </a>
+      <a href="${esc(dashboardUrl)}" style="display:inline-block;background:#1a1a30;border:1px solid #3a3a55;color:#a5b4fc;text-decoration:none;padding:12px 24px;border-radius:8px;font-weight:600;font-size:13px;">
+        View Dashboard
+      </a>
+    </div>
+  </div>
+  <div style="padding:16px 28px;border-top:1px solid #3a1a1a;background:#0c0c18;">
+    <p style="margin:0;font-size:11px;color:#555;">SentraShield · AI Data Loss Prevention · <a href="https://sentrashield.com" style="color:#555;">sentrashield.com</a></p>
+  </div>
+</div></body></html>`;
+}
+
+function subscriptionWarningHtml(org, daysLeft, dashboardUrl, renewUrl) {
+  const urgent      = daysLeft <= 7;
+  const accentColor = urgent ? '#f97316' : '#6366f1';
+  const bgColor     = urgent ? '#1a0a00' : '#0d0a1a';
+  const borderColor = urgent ? '#3a1a00' : '#1e1a3a';
+  const dayLabel    = daysLeft <= 1 ? 'less than 24 hours' : `${daysLeft} days`;
+
+  return `<!DOCTYPE html><html><head><meta charset="UTF-8"></head>
+<body style="margin:0;padding:0;background:#0f0f1a;font-family:'Segoe UI',sans-serif;">
+<div style="max-width:520px;margin:32px auto;background:#12121f;border:1px solid ${borderColor};border-radius:12px;overflow:hidden;">
+  <div style="background:linear-gradient(135deg,${bgColor},#0a0d1a);padding:24px 28px;border-bottom:1px solid ${borderColor};">
+    <p style="margin:0;font-size:11px;font-weight:700;letter-spacing:2px;color:${accentColor};text-transform:uppercase;">SentraShield</p>
+    <h1 style="margin:8px 0 0;font-size:20px;font-weight:700;color:#fffaf0;">${urgent ? '⚡ ' : '⏰ '}Subscription expires in ${dayLabel}</h1>
+  </div>
+  <div style="padding:24px 28px;">
+    <p style="color:#cbd5e1;font-size:14px;line-height:1.7;">
+      Hi ${esc(org.name)},<br><br>
+      Your SentraShield subscription expires in <strong style="color:${accentColor};">${dayLabel}</strong>.
+      After that, DLP enforcement will pause and your team's AI tool usage will be unprotected.
+    </p>
+    <div style="background:${bgColor};border:1px solid ${borderColor};border-radius:8px;padding:14px 18px;margin:20px 0;">
+      <p style="margin:0 0 8px;color:${accentColor};font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;">Action required</p>
+      <p style="margin:0;color:#e2e8f0;font-size:12px;line-height:1.6;">Reply to this email or contact your account manager to arrange renewal via bank transfer before your subscription lapses.</p>
+    </div>
+    <p style="color:#cbd5e1;font-size:13px;line-height:1.7;">Renew now to keep your team protected without any interruption.</p>
+    <div style="margin-top:20px;">
+      <a href="${esc(renewUrl)}" style="display:inline-block;background:#6366f1;color:#fff;text-decoration:none;padding:12px 24px;border-radius:8px;font-weight:700;font-size:13px;margin-right:10px;">
+        Renew Now →
+      </a>
+      <a href="${esc(dashboardUrl)}" style="display:inline-block;background:#1a1a30;border:1px solid #3a3a55;color:#a5b4fc;text-decoration:none;padding:12px 24px;border-radius:8px;font-weight:600;font-size:13px;">
+        View Dashboard
+      </a>
+    </div>
+  </div>
+  <div style="padding:16px 28px;border-top:1px solid ${borderColor};background:#0c0c18;">
+    <p style="margin:0;font-size:11px;color:#555;">SentraShield · AI Data Loss Prevention · <a href="https://sentrashield.com" style="color:#555;">sentrashield.com</a></p>
+  </div>
+</div></body></html>`;
+}
+
 // ── Supabase PATCH helper ─────────────────────────────────────────────────────
 async function patchOrg(serviceKey, orgId, fields) {
   const res = await fetch(`${SUPABASE_URL}/rest/v1/organizations?id=eq.${encodeURIComponent(orgId)}`, {
@@ -229,6 +303,90 @@ export default async function handler(req, res) {
     }
   }
 
-  console.log('[cron-trial-check]', results);
-  return res.status(200).json({ ok: true, ...results });
+  // ── SUBSCRIPTION EXPIRY CHECK ──────────────────────────────────────────────
+  // Separate from trial: handles paid orgs with subscription_status='active'
+  // • daysLeft ≤ 0  → set active=false + subscription_status='expired' + send expiry email
+  // • daysLeft ≤ 7  → send "7 days" warning (once, guarded by sub_warned_7d)
+  // • daysLeft ≤ 30 → send "30 days" warning (once, guarded by sub_warned_30d)
+  const subResults = { subChecked: 0, subExpired: 0, subWarned7d: 0, subWarned30d: 0 };
+
+  const subsRes = await fetch(
+    `${SUPABASE_URL}/rest/v1/organizations` +
+    `?select=id,name,admin_email,slug,subscription_ends_at,sub_warned_30d,sub_warned_7d` +
+    `&active=eq.true&status=eq.approved&subscription_status=eq.active&subscription_ends_at=not.is.null`,
+    {
+      headers: {
+        'apikey':        SERVICE_KEY,
+        'Authorization': `Bearer ${SERVICE_KEY}`,
+      },
+    }
+  );
+
+  if (!subsRes.ok) {
+    console.error('Failed to fetch subscription orgs:', await subsRes.text());
+  } else {
+    const subs = await subsRes.json();
+    subResults.subChecked = Array.isArray(subs) ? subs.length : 0;
+
+    for (const org of (Array.isArray(subs) ? subs : [])) {
+      try {
+        const subEnd   = new Date(org.subscription_ends_at);
+        const msLeft   = subEnd - now;
+        const daysLeft = Math.ceil(msLeft / (1000 * 60 * 60 * 24));
+
+        const dashboardUrl = `https://${org.slug}.${BASE_DOMAIN}/dashboard`;
+        const renewUrl     = `${SITE_URL}/#pricing`;
+
+        // ── EXPIRED ──────────────────────────────────────────────
+        if (daysLeft <= 0) {
+          await patchOrg(SERVICE_KEY, org.id, { active: false, subscription_status: 'expired' });
+
+          if (RESEND_KEY) {
+            await sendEmail(
+              RESEND_KEY, RESEND_FROM, org.admin_email,
+              `Your SentraShield subscription has expired — ${org.name}`,
+              subscriptionExpiredHtml(org, dashboardUrl, renewUrl)
+            );
+          }
+          subResults.subExpired++;
+          continue;
+        }
+
+        // ── 7-DAY WARNING ─────────────────────────────────────────
+        if (daysLeft <= 7 && !org.sub_warned_7d) {
+          if (RESEND_KEY) {
+            await sendEmail(
+              RESEND_KEY, RESEND_FROM, org.admin_email,
+              `⚡ Your SentraShield subscription expires in ${daysLeft} day${daysLeft !== 1 ? 's' : ''} — ${org.name}`,
+              subscriptionWarningHtml(org, daysLeft, dashboardUrl, renewUrl)
+            );
+          }
+          // Mark both 7d and 30d to avoid sending the 30d warning after the 7d
+          await patchOrg(SERVICE_KEY, org.id, { sub_warned_7d: true, sub_warned_30d: true });
+          subResults.subWarned7d++;
+          continue;
+        }
+
+        // ── 30-DAY WARNING ────────────────────────────────────────
+        if (daysLeft <= 30 && !org.sub_warned_30d) {
+          if (RESEND_KEY) {
+            await sendEmail(
+              RESEND_KEY, RESEND_FROM, org.admin_email,
+              `⏰ ${daysLeft} days until your SentraShield subscription expires — ${org.name}`,
+              subscriptionWarningHtml(org, daysLeft, dashboardUrl, renewUrl)
+            );
+          }
+          await patchOrg(SERVICE_KEY, org.id, { sub_warned_30d: true });
+          subResults.subWarned30d++;
+        }
+
+      } catch (err) {
+        console.error(`Subscription check failed for org ${org.id}:`, err);
+        results.errors.push(org.id);
+      }
+    }
+  }
+
+  console.log('[cron-trial-check]', { ...results, ...subResults });
+  return res.status(200).json({ ok: true, ...results, ...subResults });
 }

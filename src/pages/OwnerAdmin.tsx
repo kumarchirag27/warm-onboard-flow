@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import {
   CheckCircle, XCircle, Clock, RefreshCw,
   Building2, Briefcase, Mail, Globe, Users, ShieldAlert,
-  AlertTriangle, Lock, LogOut, ExternalLink,
+  AlertTriangle, Lock, LogOut, ExternalLink, CreditCard, Calendar,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -23,7 +23,11 @@ interface Org {
   status: 'pending' | 'approved' | 'rejected' | null;
   policy: string;
   seats_used: number | null;
+  seats: number | null;
   created_at: string;
+  trial_ends_at: string | null;
+  subscription_status: string | null;
+  subscription_ends_at: string | null;
 }
 interface Stats { total: number; pending: number; approved: number; rejected: number; }
 
@@ -63,6 +67,10 @@ function timeAgo(iso: string): string {
   return `${Math.floor(h / 24)}d ago`;
 }
 
+function fmtDate(iso: string): string {
+  return new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+}
+
 function StatusBadge({ status }: { status: Org['status'] }) {
   const map = {
     pending:  { bg: 'bg-amber-500/10',  text: 'text-amber-400',  border: 'border-amber-500/25',  icon: <Clock className="h-3 w-3" />,       label: 'Pending'  },
@@ -75,6 +83,38 @@ function StatusBadge({ status }: { status: Org['status'] }) {
       {s.icon} {s.label}
     </span>
   );
+}
+
+function SubscriptionBadge({ status, endsAt }: { status: string | null; endsAt: string | null }) {
+  if (!status || status === 'trial') return null;
+
+  const daysLeft = endsAt
+    ? Math.ceil((new Date(endsAt).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
+    : null;
+
+  if (status === 'active') {
+    const warn = daysLeft !== null && daysLeft <= 30;
+    return (
+      <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold border ${
+        warn
+          ? 'bg-amber-500/10 text-amber-400 border-amber-500/25'
+          : 'bg-indigo-500/10 text-indigo-400 border-indigo-500/25'
+      }`}>
+        <CreditCard className="h-3 w-3" />
+        {warn ? `${daysLeft}d left` : 'Active Sub'}
+      </span>
+    );
+  }
+
+  if (status === 'expired') {
+    return (
+      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold border bg-red-500/10 text-red-400 border-red-500/25">
+        <XCircle className="h-3 w-3" /> Sub Expired
+      </span>
+    );
+  }
+
+  return null;
 }
 
 // ─────────────────────────────────────────────────────────────────
@@ -94,6 +134,12 @@ const OwnerAdmin = () => {
   const [toast, setToast]             = useState<{ msg: string; ok: boolean } | null>(null);
   const [rejectTarget, setRejectTarget] = useState<Org | null>(null);
   const [rejectReason, setRejectReason] = useState('Domain could not be verified.');
+
+  // ── Subscription activation state ───────────────────────────────
+  const [activateTarget, setActivateTarget] = useState<Org | null>(null);
+  const [activatePlan,   setActivatePlan]   = useState('professional');
+  const [activateSeats,  setActivateSeats]  = useState('25');
+  const [activateAction, setActivateAction] = useState<'activate' | 'extend'>('activate');
 
   // ── Clean up token from URL bar after it has been read into state ──
   //    readToken() already saved the token to sessionStorage synchronously,
@@ -208,6 +254,45 @@ const OwnerAdmin = () => {
     }
   };
 
+  // ── Activate / Extend subscription ──────────────────────────
+  const handleActivate = async () => {
+    if (!activateTarget || actionId) return;
+    const org = activateTarget;
+    setActivateTarget(null);
+    setActionId(org.id);
+    try {
+      const res = await fetch('/api/admin-activate', {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${adminToken}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          orgId:  org.id,
+          plan:   activatePlan,
+          seats:  Number(activateSeats),
+          action: activateAction,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed');
+      const endDate = fmtDate(data.subscription_ends_at);
+      showToast(`✓ ${org.name} subscription ${activateAction === 'extend' ? 'extended' : 'activated'} until ${endDate}`);
+      setOrgs(prev => prev.map(o => o.id === org.id
+        ? {
+            ...o,
+            subscription_status:  'active',
+            subscription_ends_at: data.subscription_ends_at,
+            plan:  activatePlan,
+            seats: Number(activateSeats),
+            active: true,
+          }
+        : o
+      ));
+    } catch (err: unknown) {
+      showToast(err instanceof Error ? err.message : 'Activation failed', false);
+    } finally {
+      setActionId(null);
+    }
+  };
+
   const logout = () => {
     sessionStorage.removeItem(SESSION_KEY);
     setAuthed(false);
@@ -299,6 +384,96 @@ const OwnerAdmin = () => {
         </div>
       )}
 
+      {/* Activate / Extend subscription modal */}
+      {activateTarget && (
+        <div className="fixed inset-0 z-40 bg-black/60 flex items-center justify-center px-4">
+          <div className="w-full max-w-md bg-[#12121f] border border-border/50 rounded-xl p-6">
+            <div className="flex items-center gap-2 mb-1">
+              <CreditCard className="h-4 w-4 text-indigo-400" />
+              <h2 className="text-base font-bold">
+                {activateAction === 'extend' ? 'Extend Subscription' : 'Activate Subscription'}
+              </h2>
+            </div>
+            <p className="text-sm font-semibold text-indigo-300 mb-1">{activateTarget.name}</p>
+            <p className="text-xs text-muted-foreground mb-4">
+              {activateAction === 'extend'
+                ? 'Adds 12 months from the current end date (or today if already expired). Resets renewal warning flags.'
+                : 'Starts a 12-month subscription from today. Sets the org to active and sends a confirmation email.'}
+            </p>
+
+            <div className="space-y-3 mb-5">
+              {/* Action toggle */}
+              <div>
+                <label className="text-xs text-muted-foreground block mb-1.5">Action</label>
+                <div className="flex gap-2">
+                  {(['activate', 'extend'] as const).map(a => (
+                    <button
+                      key={a}
+                      onClick={() => setActivateAction(a)}
+                      className={`flex-1 py-1.5 rounded-lg text-xs font-semibold border transition-colors capitalize
+                        ${activateAction === a
+                          ? 'bg-indigo-500/20 text-indigo-300 border-indigo-500/40'
+                          : 'bg-transparent text-muted-foreground border-border/40 hover:bg-white/5'}`}
+                    >
+                      {a === 'activate' ? '✨ New (12 mo from today)' : '🔄 Extend (+12 mo)'}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Plan picker */}
+              <div>
+                <label className="text-xs text-muted-foreground block mb-1.5">Plan</label>
+                <select
+                  className="w-full bg-[#0c1422] border border-border/50 rounded-lg px-3 py-2 text-sm text-foreground focus:outline-none focus:border-indigo-500/60"
+                  value={activatePlan}
+                  onChange={e => setActivatePlan(e.target.value)}
+                >
+                  <option value="starter">Starter</option>
+                  <option value="professional">Professional</option>
+                  <option value="enterprise">Enterprise</option>
+                </select>
+              </div>
+
+              {/* Seats */}
+              <div>
+                <label className="text-xs text-muted-foreground block mb-1.5">Licensed Seats</label>
+                <Input
+                  type="number"
+                  min={1}
+                  value={activateSeats}
+                  onChange={e => setActivateSeats(e.target.value)}
+                  className="bg-[#0c1422] font-mono border-border/50 focus:border-indigo-500/60"
+                  placeholder="25"
+                />
+              </div>
+            </div>
+
+            {/* Current subscription info */}
+            {activateTarget.subscription_ends_at && (
+              <div className="mb-4 flex items-center gap-1.5 text-xs text-muted-foreground/70 bg-white/5 rounded-lg px-3 py-2">
+                <Calendar className="h-3.5 w-3.5 shrink-0" />
+                Current end: <span className="font-semibold text-foreground/70 ml-1">{fmtDate(activateTarget.subscription_ends_at)}</span>
+              </div>
+            )}
+
+            <div className="flex gap-2 justify-end">
+              <Button variant="ghost" size="sm" onClick={() => setActivateTarget(null)}>Cancel</Button>
+              <button
+                onClick={handleActivate}
+                disabled={!!actionId}
+                className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-semibold
+                  bg-indigo-500/20 hover:bg-indigo-500/30 text-indigo-300 border border-indigo-500/35
+                  transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <CreditCard className="h-3.5 w-3.5" />
+                {activateAction === 'extend' ? 'Extend 12 Months' : 'Activate Subscription'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Header */}
       <header className="border-b border-[#1c2d45] bg-[#0c1422] px-6 py-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
@@ -381,6 +556,9 @@ const OwnerAdmin = () => {
                 <div className="flex items-center gap-2 mb-1 flex-wrap">
                   <span className="font-bold text-sm text-foreground">{org.name}</span>
                   <StatusBadge status={org.status} />
+                  {org.subscription_status && org.subscription_status !== 'trial' && (
+                    <SubscriptionBadge status={org.subscription_status} endsAt={org.subscription_ends_at} />
+                  )}
                   <span className="text-xs text-muted-foreground/60 ml-auto">{timeAgo(org.created_at)}</span>
                 </div>
 
@@ -428,25 +606,56 @@ const OwnerAdmin = () => {
                   {org.seats_used !== null && (
                     <span className="flex items-center gap-1">
                       <Users className="h-3 w-3" /> {org.seats_used} seat{org.seats_used !== 1 ? 's' : ''}
+                      {org.seats ? ` / ${org.seats} licensed` : ''}
                     </span>
                   )}
                   <span className="capitalize">Plan: {org.plan}</span>
                 </div>
+
+                {/* Subscription date row */}
+                {org.status === 'approved' && org.subscription_ends_at && (
+                  <div className="mt-1.5 flex items-center gap-1.5 text-xs text-muted-foreground/50">
+                    <Calendar className="h-3 w-3 shrink-0" />
+                    {org.subscription_status === 'active' ? 'Sub until' : 'Sub ended'}:&nbsp;
+                    <span className={`font-semibold ${
+                      org.subscription_status === 'expired' ? 'text-red-400/70' : 'text-muted-foreground/70'
+                    }`}>
+                      {fmtDate(org.subscription_ends_at)}
+                    </span>
+                  </div>
+                )}
               </div>
 
               {/* Right: action buttons */}
               <div className="flex flex-col gap-2 shrink-0">
                 {org.status === 'approved' && (
-                  <a
-                    href={`https://${org.slug}.ai-dlp.sentrashield.com/dashboard`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold
-                      bg-primary/10 hover:bg-primary/20 text-primary border border-primary/25
-                      transition-colors"
-                  >
-                    <ExternalLink className="h-3.5 w-3.5" /> Open Dashboard
-                  </a>
+                  <>
+                    <a
+                      href={`https://${org.slug}.ai-dlp.sentrashield.com/dashboard`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold
+                        bg-primary/10 hover:bg-primary/20 text-primary border border-primary/25
+                        transition-colors"
+                    >
+                      <ExternalLink className="h-3.5 w-3.5" /> Open Dashboard
+                    </a>
+                    <button
+                      onClick={() => {
+                        setActivateTarget(org);
+                        setActivateAction(org.subscription_status === 'active' ? 'extend' : 'activate');
+                        setActivatePlan(org.plan || 'professional');
+                        setActivateSeats(String(org.seats ?? 25));
+                      }}
+                      disabled={!!actionId}
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold
+                        bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-400 border border-indigo-500/25
+                        transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <CreditCard className="h-3.5 w-3.5" />
+                      {actionId === org.id ? 'Working…' : org.subscription_status === 'active' ? 'Extend' : 'Activate'}
+                    </button>
+                  </>
                 )}
                 {org.status === 'pending' && (
                   <>
