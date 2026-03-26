@@ -3,6 +3,7 @@ import {
   CheckCircle, XCircle, Clock, RefreshCw,
   Building2, Briefcase, Mail, Globe, Users, ShieldAlert,
   AlertTriangle, Lock, LogOut, ExternalLink, CreditCard, Calendar,
+  ShieldCheck, Plus, Trash2, ToggleLeft, ToggleRight,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -32,6 +33,20 @@ interface Org {
 interface Stats { total: number; pending: number; approved: number; rejected: number; }
 
 type Filter = 'all' | 'pending' | 'approved' | 'rejected';
+type MainTab = 'orgs' | 'rules';
+
+interface Rule {
+  id: string;
+  name: string;
+  label: string;
+  category: string;
+  severity: 'low' | 'medium' | 'high' | 'critical';
+  pattern: string;
+  flags: string;
+  description: string | null;
+  enabled: boolean;
+  created_at: string;
+}
 
 // ─────────────────────────────────────────────────────────────────
 // Helpers
@@ -126,6 +141,8 @@ const OwnerAdmin = () => {
   const [tokenInput, setTokenInput]   = useState('');
   const [tokenError, setTokenError]   = useState('');
 
+  const [mainTab, setMainTab]         = useState<MainTab>('orgs');
+
   const [orgs, setOrgs]               = useState<Org[]>([]);
   const [stats, setStats]             = useState<Stats | null>(null);
   const [filter, setFilter]           = useState<Filter>('pending');
@@ -140,6 +157,13 @@ const OwnerAdmin = () => {
   const [activatePlan,   setActivatePlan]   = useState('professional');
   const [activateSeats,  setActivateSeats]  = useState('25');
   const [activateAction, setActivateAction] = useState<'activate' | 'extend'>('activate');
+
+  // ── Rules state ─────────────────────────────────────────────────
+  const [rules, setRules]             = useState<Rule[]>([]);
+  const [rulesLoading, setRulesLoading] = useState(false);
+  const [showAddRule, setShowAddRule] = useState(false);
+  const [newRule, setNewRule]         = useState({ name: '', label: '', category: 'pii', severity: 'high', pattern: '', flags: 'g', description: '' });
+  const [ruleActionId, setRuleActionId] = useState<string | null>(null);
 
   // ── Clean up token from URL bar after it has been read into state ──
   //    readToken() already saved the token to sessionStorage synchronously,
@@ -186,6 +210,90 @@ const OwnerAdmin = () => {
   useEffect(() => {
     if (authed && adminToken) fetchOrgs(adminToken);
   }, [authed, adminToken, fetchOrgs]);
+
+  // ── Fetch rules ───────────────────────────────────────────────
+  const fetchRules = useCallback(async (token: string) => {
+    setRulesLoading(true);
+    try {
+      const res = await fetch('/api/admin-rules', {
+        headers: { 'Authorization': `Bearer ${token}` },
+      });
+      if (!res.ok) throw new Error('Failed to load rules');
+      const data = await res.json();
+      setRules(data.rules || []);
+    } catch {
+      showToast('Failed to load rules', false);
+    } finally {
+      setRulesLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (authed && adminToken && mainTab === 'rules') fetchRules(adminToken);
+  }, [authed, adminToken, mainTab, fetchRules]);
+
+  // ── Toggle rule enabled ──────────────────────────────────────
+  const handleToggleRule = async (rule: Rule) => {
+    if (ruleActionId) return;
+    setRuleActionId(rule.id);
+    try {
+      const res = await fetch('/api/admin-rules', {
+        method: 'PATCH',
+        headers: { 'Authorization': `Bearer ${adminToken}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: rule.id, enabled: !rule.enabled }),
+      });
+      if (!res.ok) throw new Error('Failed to update');
+      setRules(prev => prev.map(r => r.id === rule.id ? { ...r, enabled: !r.enabled } : r));
+    } catch {
+      showToast('Failed to update rule', false);
+    } finally {
+      setRuleActionId(null);
+    }
+  };
+
+  // ── Delete rule ──────────────────────────────────────────────
+  const handleDeleteRule = async (rule: Rule) => {
+    if (ruleActionId) return;
+    setRuleActionId(rule.id);
+    try {
+      const res = await fetch('/api/admin-rules', {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${adminToken}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: rule.id }),
+      });
+      if (!res.ok) throw new Error('Failed to delete');
+      setRules(prev => prev.filter(r => r.id !== rule.id));
+      showToast(`Rule "${rule.name}" deleted`);
+    } catch {
+      showToast('Failed to delete rule', false);
+    } finally {
+      setRuleActionId(null);
+    }
+  };
+
+  // ── Add rule ─────────────────────────────────────────────────
+  const handleAddRule = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newRule.name || !newRule.label || !newRule.pattern) return;
+    setRuleActionId('new');
+    try {
+      const res = await fetch('/api/admin-rules', {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${adminToken}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify(newRule),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed');
+      if (data.rule) setRules(prev => [...prev, data.rule]);
+      setNewRule({ name: '', label: '', category: 'pii', severity: 'high', pattern: '', flags: 'g', description: '' });
+      setShowAddRule(false);
+      showToast(`✓ Rule "${newRule.name}" added`);
+    } catch (err: unknown) {
+      showToast(err instanceof Error ? err.message : 'Failed to add rule', false);
+    } finally {
+      setRuleActionId(null);
+    }
+  };
 
   // ── Handle token submit ──────────────────────────────────────
   const handleTokenSubmit = async (e: React.FormEvent) => {
@@ -515,6 +623,196 @@ const OwnerAdmin = () => {
         </div>
       )}
 
+      {/* Main tab navigation */}
+      <div className="flex gap-1 px-6 py-3 border-b border-[#1c2d45] bg-[#080c14]">
+        <button
+          onClick={() => setMainTab('orgs')}
+          className={`flex items-center gap-1.5 px-4 py-1.5 rounded-md text-xs font-semibold transition-colors
+            ${mainTab === 'orgs'
+              ? 'bg-primary/15 text-primary border border-primary/25'
+              : 'text-muted-foreground hover:text-foreground hover:bg-white/5'}`}
+        >
+          <Building2 className="h-3.5 w-3.5" /> Organizations
+        </button>
+        <button
+          onClick={() => setMainTab('rules')}
+          className={`flex items-center gap-1.5 px-4 py-1.5 rounded-md text-xs font-semibold transition-colors
+            ${mainTab === 'rules'
+              ? 'bg-violet-500/15 text-violet-300 border border-violet-500/25'
+              : 'text-muted-foreground hover:text-foreground hover:bg-white/5'}`}
+        >
+          <ShieldCheck className="h-3.5 w-3.5" /> Detection Rules
+          <span className="ml-1 px-1.5 py-0.5 rounded-full bg-violet-500/20 text-violet-300 text-[10px] font-bold">
+            {rules.filter(r => r.enabled).length}/{rules.length}
+          </span>
+        </button>
+      </div>
+
+      {/* ── Rules Panel ─────────────────────────────────────── */}
+      {mainTab === 'rules' && (
+        <div className="p-6 max-w-5xl mx-auto">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h2 className="text-sm font-bold text-foreground">Detection Rules</h2>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                Rules are synced to all extensions every 30 min. All matching is local — zero data sent to AI.
+              </p>
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={() => fetchRules(adminToken)}
+                className="p-1.5 rounded-md hover:bg-white/5 text-muted-foreground transition-colors"
+                title="Refresh"
+              >
+                <RefreshCw className={`h-4 w-4 ${rulesLoading ? 'animate-spin' : ''}`} />
+              </button>
+              <button
+                onClick={() => setShowAddRule(v => !v)}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold
+                  bg-violet-500/10 hover:bg-violet-500/20 text-violet-300 border border-violet-500/25 transition-colors"
+              >
+                <Plus className="h-3.5 w-3.5" /> Add Rule
+              </button>
+            </div>
+          </div>
+
+          {/* Add rule form */}
+          {showAddRule && (
+            <form onSubmit={handleAddRule} className="mb-4 rounded-xl border border-violet-500/20 bg-violet-500/5 p-4 space-y-3">
+              <p className="text-xs font-semibold text-violet-300 mb-2">New Detection Rule</p>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs text-muted-foreground block mb-1">Name (slug)</label>
+                  <Input value={newRule.name} onChange={e => setNewRule(p => ({ ...p, name: e.target.value }))}
+                    placeholder="e.g. apiKey" className="bg-background/50 font-mono text-xs border-border/50" required />
+                </div>
+                <div>
+                  <label className="text-xs text-muted-foreground block mb-1">Label (display)</label>
+                  <Input value={newRule.label} onChange={e => setNewRule(p => ({ ...p, label: e.target.value }))}
+                    placeholder="e.g. API Key" className="bg-background/50 text-xs border-border/50" required />
+                </div>
+              </div>
+              <div>
+                <label className="text-xs text-muted-foreground block mb-1">Regex Pattern</label>
+                <Input value={newRule.pattern} onChange={e => setNewRule(p => ({ ...p, pattern: e.target.value }))}
+                  placeholder={String.raw`e.g. \b[A-Za-z0-9]{32}\b`} className="bg-background/50 font-mono text-xs border-border/50" required />
+              </div>
+              <div className="grid grid-cols-3 gap-3">
+                <div>
+                  <label className="text-xs text-muted-foreground block mb-1">Category</label>
+                  <select value={newRule.category} onChange={e => setNewRule(p => ({ ...p, category: e.target.value }))}
+                    className="w-full bg-[#0c1422] border border-border/50 rounded-lg px-2 py-2 text-xs text-foreground focus:outline-none">
+                    <option value="pii">PII</option>
+                    <option value="credentials">Credentials</option>
+                    <option value="financial">Financial</option>
+                    <option value="network">Network</option>
+                    <option value="custom">Custom</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="text-xs text-muted-foreground block mb-1">Severity</label>
+                  <select value={newRule.severity} onChange={e => setNewRule(p => ({ ...p, severity: e.target.value }))}
+                    className="w-full bg-[#0c1422] border border-border/50 rounded-lg px-2 py-2 text-xs text-foreground focus:outline-none">
+                    <option value="critical">Critical</option>
+                    <option value="high">High</option>
+                    <option value="medium">Medium</option>
+                    <option value="low">Low</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="text-xs text-muted-foreground block mb-1">Flags</label>
+                  <Input value={newRule.flags} onChange={e => setNewRule(p => ({ ...p, flags: e.target.value }))}
+                    placeholder="g" className="bg-background/50 font-mono text-xs border-border/50" />
+                </div>
+              </div>
+              <div>
+                <label className="text-xs text-muted-foreground block mb-1">Description (optional)</label>
+                <Input value={newRule.description} onChange={e => setNewRule(p => ({ ...p, description: e.target.value }))}
+                  placeholder="What this rule detects…" className="bg-background/50 text-xs border-border/50" />
+              </div>
+              <div className="flex gap-2 justify-end pt-1">
+                <Button variant="ghost" size="sm" type="button" onClick={() => setShowAddRule(false)}>Cancel</Button>
+                <button type="submit" disabled={!!ruleActionId}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold
+                    bg-violet-500/20 hover:bg-violet-500/30 text-violet-300 border border-violet-500/35
+                    transition-colors disabled:opacity-50">
+                  <Plus className="h-3.5 w-3.5" />
+                  {ruleActionId === 'new' ? 'Adding…' : 'Add Rule'}
+                </button>
+              </div>
+            </form>
+          )}
+
+          {/* Rules list */}
+          {rulesLoading && rules.length === 0 ? (
+            <div className="text-center text-muted-foreground py-12 text-sm">Loading…</div>
+          ) : rules.length === 0 ? (
+            <div className="text-center text-muted-foreground py-12 text-sm">No rules found</div>
+          ) : (
+            <div className="space-y-2">
+              {rules.map(rule => {
+                const severityColor = {
+                  critical: 'text-red-400 border-red-500/25 bg-red-500/5',
+                  high:     'text-orange-400 border-orange-500/25 bg-orange-500/5',
+                  medium:   'text-yellow-400 border-yellow-500/25 bg-yellow-500/5',
+                  low:      'text-blue-400 border-blue-500/25 bg-blue-500/5',
+                }[rule.severity] ?? 'text-muted-foreground border-border/25 bg-white/5';
+
+                return (
+                  <div key={rule.id}
+                    className={`rounded-xl border p-4 transition-opacity ${rule.enabled ? '' : 'opacity-50'} border-[#1c2d45] bg-[#080c14]`}
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap mb-1">
+                          <span className="font-mono text-xs font-bold text-foreground">{rule.name}</span>
+                          <span className="text-xs text-muted-foreground">{rule.label}</span>
+                          <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold border uppercase ${severityColor}`}>
+                            {rule.severity}
+                          </span>
+                          <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium border border-[#1c2d45] text-muted-foreground capitalize">
+                            {rule.category}
+                          </span>
+                        </div>
+                        <div className="font-mono text-[11px] text-muted-foreground/70 bg-black/20 rounded px-2 py-1 mt-1.5 break-all">
+                          /{rule.pattern}/{rule.flags}
+                        </div>
+                        {rule.description && (
+                          <p className="text-xs text-muted-foreground/60 mt-1.5">{rule.description}</p>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-1.5 shrink-0">
+                        <button
+                          onClick={() => handleToggleRule(rule)}
+                          disabled={!!ruleActionId}
+                          title={rule.enabled ? 'Disable rule' : 'Enable rule'}
+                          className="p-1.5 rounded-md hover:bg-white/5 transition-colors disabled:opacity-50"
+                        >
+                          {rule.enabled
+                            ? <ToggleRight className="h-5 w-5 text-emerald-400" />
+                            : <ToggleLeft className="h-5 w-5 text-muted-foreground" />}
+                        </button>
+                        <button
+                          onClick={() => handleDeleteRule(rule)}
+                          disabled={!!ruleActionId}
+                          title="Delete rule"
+                          className="p-1.5 rounded-md hover:bg-red-500/10 text-muted-foreground hover:text-red-400 transition-colors disabled:opacity-50"
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ── Orgs Panel ──────────────────────────────────────── */}
+      {mainTab === 'orgs' && <>
+
       {/* Filter tabs */}
       <div className="flex gap-1 px-6 py-3 border-b border-[#1c2d45] bg-[#0c1422]">
         {(['pending', 'all', 'approved', 'rejected'] as Filter[]).map(f => (
@@ -526,7 +824,7 @@ const OwnerAdmin = () => {
                 ? 'bg-primary/15 text-primary border border-primary/25'
                 : 'text-muted-foreground hover:text-foreground hover:bg-white/5'}`}
           >
-            {f} {f !== 'all' && stats ? `(${stats[f]})` : ''}
+            {f} {f !== 'all' && stats ? `(${stats[f as keyof Stats]})` : ''}
           </button>
         ))}
       </div>
@@ -685,6 +983,7 @@ const OwnerAdmin = () => {
           </div>
         ))}
       </div>
+      </>}
     </div>
   );
 };
