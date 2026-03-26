@@ -8,7 +8,7 @@
     },
     {
       "path": "/api/cron-violation-alerts",
-      "schedule": "0 * * * *"
+      "schedule": "0 9 * * *"
     }
   ],
   "rewrites": [

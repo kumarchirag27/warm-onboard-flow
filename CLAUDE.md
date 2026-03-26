@@ -28,7 +28,7 @@ Never mix concerns across repos.
 
 ### 2. Cron Jobs
 - `cron-trial-check.js` — daily at 08:00 UTC via Vercel cron
-- `cron-violation-alerts.js` — hourly via Vercel cron
+- `cron-violation-alerts.js` — daily at 09:00 UTC via Vercel cron (Hobby plan limit: 1/day)
 - All crons are authenticated via `Authorization: Bearer {CRON_SECRET}` header (auto-injected by Vercel)
 - Always include a skip guard to prevent duplicate processing within the same window
 
@@ -94,4 +94,4 @@ CRON_SECRET
 | `admin-activate.js` | POST | ADMIN_TOKEN | Activate or extend subscription |
 | `notify-owner.js` | POST | none | New signup notification to owner |
 | `cron-trial-check.js` | GET | CRON_SECRET | Daily trial/subscription expiry checks |
-| `cron-violation-alerts.js` | GET | CRON_SECRET | Hourly violation alert emails |
+| `cron-violation-alerts.js` | GET | CRON_SECRET | Daily violation alert emails (09:00 UTC) |
