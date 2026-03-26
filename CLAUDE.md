@@ -33,9 +33,9 @@ Never mix concerns across repos.
 - Always include a skip guard to prevent duplicate processing within the same window
 
 ### 3. Business Logic (do not change without discussion)
-- Trial period = 14 days from approval
+- Trial period = 7 days from approval
 - Subscription = 12 months from activation date
-- Warning emails: trial at 7d + 1d; subscription at 30d + 7d
+- Warning emails: trial at 3d + 1d; subscription at 30d + 7d
 - Violation alerts: only fire for `critical` or `high` severity
 - `active=false` disables the org — extension stops enforcing within 5 minutes
 - No payment gateway — bank transfer only, owner manually activates via `/admin`

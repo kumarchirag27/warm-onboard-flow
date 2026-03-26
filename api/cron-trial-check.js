@@ -3,7 +3,7 @@
 // For every active approved org with a trial_ends_at date:
 //   • daysLeft ≤ 0  → set active=false  + send "trial expired" email
 //   • daysLeft ≤ 1  → send "1 day left"  warning  (once, guarded by trial_warned_1d)
-//   • daysLeft ≤ 7  → send "7 days left" warning  (once, guarded by trial_warned_7d)
+//   • daysLeft ≤ 3  → send "3 days left" warning  (once, guarded by trial_warned_7d)
 //
 // Required env vars (Vercel dashboard):
 //   CRON_SECRET          — auto-injected by Vercel; used to authenticate the cron call
@@ -31,7 +31,7 @@ function trialExpiredHtml(org, dashboardUrl, upgradeUrl) {
   <div style="padding:24px 28px;">
     <p style="color:#cbd5e1;font-size:14px;line-height:1.7;">
       Hi ${esc(org.name)},<br><br>
-      Your 14-day SentraShield trial has ended and DLP enforcement has been <strong style="color:#f87171;">paused</strong> on your employees' devices.
+      Your 7-day SentraShield trial has ended and DLP enforcement has been <strong style="color:#f87171;">paused</strong> on your employees' devices.
     </p>
     <div style="background:#1a0505;border:1px solid #3a1a1a;border-radius:8px;padding:14px 18px;margin:20px 0;">
       <p style="margin:0 0 6px;color:#f87171;font-size:13px;font-weight:700;">⚠️ Your data is no longer protected</p>
@@ -70,7 +70,7 @@ function trialWarningHtml(org, daysLeft, dashboardUrl, upgradeUrl) {
   <div style="padding:24px 28px;">
     <p style="color:#cbd5e1;font-size:14px;line-height:1.7;">
       Hi ${esc(org.name)},<br><br>
-      Your SentraShield 14-day trial expires in <strong style="color:${accentColor};">${dayLabel}</strong>.
+      Your SentraShield 7-day trial expires in <strong style="color:${accentColor};">${dayLabel}</strong>.
       After that, DLP enforcement will pause and your team's AI tool usage will be unprotected.
     </p>
     <div style="background:${bgColor};border:1px solid ${borderColor};border-radius:8px;padding:14px 18px;margin:20px 0;">
@@ -284,8 +284,8 @@ export default async function handler(req, res) {
         continue;
       }
 
-      // ── 7-DAY WARNING ──────────────────────────────────────────
-      if (daysLeft <= 7 && !org.trial_warned_7d) {
+      // ── 3-DAY WARNING ──────────────────────────────────────────
+      if (daysLeft <= 3 && !org.trial_warned_7d) {
         if (RESEND_KEY) {
           await sendEmail(
             RESEND_KEY, RESEND_FROM, org.admin_email,

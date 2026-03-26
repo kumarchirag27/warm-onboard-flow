@@ -231,7 +231,7 @@ const Signup = () => {
               <div>
                 <p className="text-sm font-semibold text-foreground">Free trial starts on approval</p>
                 <p className="text-xs text-muted-foreground">
-                  No credit card needed. Your 14-day trial begins the moment we approve your account.
+                  No credit card needed. Your 7-day trial begins the moment we approve your account.
                 </p>
               </div>
             </div>
@@ -262,7 +262,7 @@ const Signup = () => {
             </h1>
             <p className="text-sm text-muted-foreground">
               {step === 1
-                ? '14-day free trial. No credit card required.'
+                ? '7-day free trial. No credit card required.'
                 : "Tell us about your company — we'll verify the domain."}
             </p>
           </div>

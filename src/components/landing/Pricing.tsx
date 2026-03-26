@@ -63,7 +63,7 @@ const Pricing = () => {
             Simple, <span className="text-gradient">per-seat pricing</span>
           </h2>
           <p className="text-muted-foreground text-lg">
-            14-day free trial on every plan. No credit card required.
+            7-day free trial on every plan. No credit card required.
           </p>
         </div>
 
