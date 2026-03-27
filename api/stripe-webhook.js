@@ -17,7 +17,25 @@
 
 import crypto from 'crypto';
 
+// CRITICAL: Disable Vercel's automatic JSON body parsing.
+// Stripe signature verification requires the raw, unmodified request bytes.
+// If Vercel parses the body first, JSON.stringify re-serialisation changes
+// whitespace/key order and the HMAC check will always fail (400 Invalid signature).
+export const config = {
+  api: { bodyParser: false },
+};
+
 const SITE_URL = process.env.SITE_URL || 'https://ai-dlp.sentrashield.com';
+
+// Read the full raw body from the request stream into a string.
+function getRawBody(req) {
+  return new Promise((resolve, reject) => {
+    const chunks = [];
+    req.on('data', chunk => chunks.push(chunk));
+    req.on('end',  ()    => resolve(Buffer.concat(chunks).toString('utf8')));
+    req.on('error', reject);
+  });
+}
 
 // ── Stripe webhook signature verification (no SDK needed) ──────
 function verifyStripeSignature(payload, sigHeader, secret) {
@@ -62,12 +80,7 @@ export default async function handler(req, res) {
 
   // ── Verify Stripe signature ───────────────────────────────────
   const sigHeader = req.headers['stripe-signature'] || '';
-  // Vercel provides the raw body as a Buffer when Content-Type is not JSON
-  const rawBody = typeof req.body === 'string'
-    ? req.body
-    : Buffer.isBuffer(req.body)
-      ? req.body.toString('utf8')
-      : JSON.stringify(req.body);
+  const rawBody = await getRawBody(req);
 
   if (!verifyStripeSignature(rawBody, sigHeader, STRIPE_WEBHOOK_SECRET)) {
     console.warn('Stripe signature verification failed');

@@ -61,8 +61,16 @@ const Privacy = () => {
                 <p className="font-medium text-foreground mb-1">Organisation Account Data</p>
                 <p>
                   When an organisation registers, we store the administrator's name, work email address,
-                  company name, and subscription status. No payment card details are collected — we
-                  operate on a bank-transfer billing model.
+                  company name, and subscription status. Enterprise plan billing is handled via bank
+                  transfer — no payment card details are stored by SentraShield for enterprise accounts.
+                </p>
+              </div>
+              <div className="border border-border/50 rounded-lg p-4 bg-card/30">
+                <p className="font-medium text-foreground mb-1">Individual Pro Account Data</p>
+                <p>
+                  When an individual subscribes to SentraShield Personal Pro, we store the email address
+                  provided at checkout, a generated license key, and the subscription status. Payment is
+                  processed by Stripe — SentraShield does not store card numbers or billing details.
                 </p>
               </div>
             </div>
@@ -115,7 +123,11 @@ const Privacy = () => {
               </div>
               <div className="flex gap-3">
                 <span className="font-medium text-foreground w-24 shrink-0">Resend</span>
-                <span>Transactional email provider used for trial warnings, violation alerts, and approval notifications. <a href="https://resend.com/legal/privacy-policy" className="text-primary hover:underline" target="_blank" rel="noreferrer">Privacy Policy</a></span>
+                <span>Transactional email provider used for trial warnings, violation alerts, approval notifications, and Individual Pro license key delivery. <a href="https://resend.com/legal/privacy-policy" className="text-primary hover:underline" target="_blank" rel="noreferrer">Privacy Policy</a></span>
+              </div>
+              <div className="flex gap-3">
+                <span className="font-medium text-foreground w-24 shrink-0">Stripe</span>
+                <span>Payment processor for Individual Pro subscriptions. Stripe handles all card data — SentraShield never receives or stores payment details. <a href="https://stripe.com/privacy" className="text-primary hover:underline" target="_blank" rel="noreferrer">Privacy Policy</a></span>
               </div>
             </div>
           </section>
