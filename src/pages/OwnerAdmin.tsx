@@ -33,7 +33,7 @@ interface Org {
 interface Stats { total: number; pending: number; approved: number; rejected: number; }
 
 type Filter = 'all' | 'pending' | 'approved' | 'rejected';
-type MainTab = 'orgs' | 'rules';
+type MainTab = 'orgs' | 'rules' | 'sites';
 
 interface Rule {
   id: string;
@@ -44,6 +44,14 @@ interface Rule {
   pattern: string;
   flags: string;
   description: string | null;
+  enabled: boolean;
+  created_at: string;
+}
+
+interface MonitoredSite {
+  id: string;
+  hostname: string;
+  label: string;
   enabled: boolean;
   created_at: string;
 }
@@ -165,6 +173,14 @@ const OwnerAdmin = () => {
   const [newRule, setNewRule]         = useState({ name: '', label: '', category: 'pii', severity: 'high', pattern: '', flags: 'g', description: '' });
   const [ruleActionId, setRuleActionId] = useState<string | null>(null);
 
+  // ── Sites state ─────────────────────────────────────────────────
+  const [sites, setSites]               = useState<MonitoredSite[]>([]);
+  const [sitesLoading, setSitesLoading] = useState(false);
+  const [showAddSite, setShowAddSite]   = useState(false);
+  const [newSiteHostname, setNewSiteHostname] = useState('');
+  const [newSiteLabel, setNewSiteLabel]       = useState('');
+  const [siteActionId, setSiteActionId]       = useState<string | null>(null);
+
   // ── Clean up token from URL bar after it has been read into state ──
   //    readToken() already saved the token to sessionStorage synchronously,
   //    so we just need to strip it from the address bar on mount.
@@ -231,6 +247,91 @@ const OwnerAdmin = () => {
   useEffect(() => {
     if (authed && adminToken && mainTab === 'rules') fetchRules(adminToken);
   }, [authed, adminToken, mainTab, fetchRules]);
+
+  // ── Fetch sites ───────────────────────────────────────────────
+  const fetchSites = useCallback(async (token: string) => {
+    setSitesLoading(true);
+    try {
+      const res = await fetch('/api/admin-sites', {
+        headers: { 'Authorization': `Bearer ${token}` },
+      });
+      if (!res.ok) throw new Error('Failed to load sites');
+      const data = await res.json();
+      setSites(data.sites || []);
+    } catch {
+      showToast('Failed to load sites', false);
+    } finally {
+      setSitesLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (authed && adminToken && mainTab === 'sites') fetchSites(adminToken);
+  }, [authed, adminToken, mainTab, fetchSites]);
+
+  // ── Toggle site enabled ──────────────────────────────────────
+  const handleToggleSite = async (site: MonitoredSite) => {
+    if (siteActionId) return;
+    setSiteActionId(site.id);
+    try {
+      const res = await fetch('/api/admin-sites', {
+        method: 'PATCH',
+        headers: { 'Authorization': `Bearer ${adminToken}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: site.id, enabled: !site.enabled }),
+      });
+      if (!res.ok) throw new Error('Failed to update');
+      setSites(prev => prev.map(s => s.id === site.id ? { ...s, enabled: !s.enabled } : s));
+    } catch {
+      showToast('Failed to update site', false);
+    } finally {
+      setSiteActionId(null);
+    }
+  };
+
+  // ── Delete site ──────────────────────────────────────────────
+  const handleDeleteSite = async (site: MonitoredSite) => {
+    if (siteActionId) return;
+    setSiteActionId(site.id);
+    try {
+      const res = await fetch('/api/admin-sites', {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${adminToken}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: site.id }),
+      });
+      if (!res.ok) throw new Error('Failed to delete');
+      setSites(prev => prev.filter(s => s.id !== site.id));
+      showToast(`Site "${site.hostname}" removed`);
+    } catch {
+      showToast('Failed to delete site', false);
+    } finally {
+      setSiteActionId(null);
+    }
+  };
+
+  // ── Add site ─────────────────────────────────────────────────
+  const handleAddSite = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newSiteHostname) return;
+    setSiteActionId('new');
+    try {
+      const res = await fetch('/api/admin-sites', {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${adminToken}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ hostname: newSiteHostname.trim(), label: newSiteLabel.trim() || newSiteHostname.trim() }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed');
+      if (data.site) setSites(prev => [...prev, data.site].sort((a, b) => a.hostname.localeCompare(b.hostname)));
+      setNewSiteHostname('');
+      setNewSiteLabel('');
+      setShowAddSite(false);
+      showToast(`✓ "${newSiteHostname}" added to monitored sites`);
+    } catch (err: unknown) {
+      showToast(err instanceof Error ? err.message : 'Failed to add site', false);
+    } finally {
+      setSiteActionId(null);
+    }
+  };
 
   // ── Toggle rule enabled ──────────────────────────────────────
   const handleToggleRule = async (rule: Rule) => {
@@ -646,6 +747,18 @@ const OwnerAdmin = () => {
             {rules.filter(r => r.enabled).length}/{rules.length}
           </span>
         </button>
+        <button
+          onClick={() => setMainTab('sites')}
+          className={`flex items-center gap-1.5 px-4 py-1.5 rounded-md text-xs font-semibold transition-colors
+            ${mainTab === 'sites'
+              ? 'bg-teal-500/15 text-teal-300 border border-teal-500/25'
+              : 'text-muted-foreground hover:text-foreground hover:bg-white/5'}`}
+        >
+          <Globe className="h-3.5 w-3.5" /> Monitored Sites
+          <span className="ml-1 px-1.5 py-0.5 rounded-full bg-teal-500/20 text-teal-300 text-[10px] font-bold">
+            {sites.filter(s => s.enabled).length}/{sites.length}
+          </span>
+        </button>
       </div>
 
       {/* ── Rules Panel ─────────────────────────────────────── */}
@@ -805,6 +918,134 @@ const OwnerAdmin = () => {
                   </div>
                 );
               })}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ── Sites Panel ─────────────────────────────────────── */}
+      {mainTab === 'sites' && (
+        <div className="p-6 max-w-5xl mx-auto">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h2 className="text-sm font-bold text-foreground">Monitored Sites</h2>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                Sites synced to all extensions every 60 min. Disable a site to stop monitoring it without deleting it.
+              </p>
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={() => fetchSites(adminToken)}
+                className="p-1.5 rounded-md hover:bg-white/5 text-muted-foreground transition-colors"
+                title="Refresh"
+              >
+                <RefreshCw className={`h-4 w-4 ${sitesLoading ? 'animate-spin' : ''}`} />
+              </button>
+              <button
+                onClick={() => setShowAddSite(v => !v)}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold
+                  bg-teal-500/10 hover:bg-teal-500/20 text-teal-300 border border-teal-500/25 transition-colors"
+              >
+                <Plus className="h-3.5 w-3.5" /> Add Site
+              </button>
+            </div>
+          </div>
+
+          {/* Add site form */}
+          {showAddSite && (
+            <form onSubmit={handleAddSite} className="mb-4 rounded-xl border border-teal-500/20 bg-teal-500/5 p-4 space-y-3">
+              <p className="text-xs font-semibold text-teal-300 mb-2">Add Monitored Site</p>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs text-muted-foreground block mb-1">Hostname</label>
+                  <Input
+                    value={newSiteHostname}
+                    onChange={e => setNewSiteHostname(e.target.value)}
+                    placeholder="e.g. chat.openai.com"
+                    className="bg-background/50 font-mono text-xs border-border/50"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="text-xs text-muted-foreground block mb-1">Label (display)</label>
+                  <Input
+                    value={newSiteLabel}
+                    onChange={e => setNewSiteLabel(e.target.value)}
+                    placeholder="e.g. ChatGPT"
+                    className="bg-background/50 text-xs border-border/50"
+                  />
+                </div>
+              </div>
+              <div className="flex gap-2 justify-end pt-1">
+                <Button variant="ghost" size="sm" type="button" onClick={() => setShowAddSite(false)}>Cancel</Button>
+                <button
+                  type="submit"
+                  disabled={!!siteActionId}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold
+                    bg-teal-500/20 hover:bg-teal-500/30 text-teal-300 border border-teal-500/35
+                    transition-colors disabled:opacity-50"
+                >
+                  <Plus className="h-3.5 w-3.5" />
+                  {siteActionId === 'new' ? 'Adding…' : 'Add Site'}
+                </button>
+              </div>
+            </form>
+          )}
+
+          {/* Sites list */}
+          {sitesLoading && sites.length === 0 ? (
+            <div className="text-center text-muted-foreground py-12 text-sm">Loading…</div>
+          ) : sites.length === 0 ? (
+            <div className="text-center text-muted-foreground py-12 text-sm">No monitored sites found</div>
+          ) : (
+            <div className="space-y-2">
+              {sites.map(site => (
+                <div
+                  key={site.id}
+                  className={`rounded-xl border p-4 transition-opacity ${site.enabled ? '' : 'opacity-50'} border-[#1c2d45] bg-[#080c14]`}
+                >
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <Globe className="h-3.5 w-3.5 text-teal-400 shrink-0" />
+                        <span className="font-mono text-xs font-bold text-foreground">{site.hostname}</span>
+                        {site.label && site.label !== site.hostname && (
+                          <span className="text-xs text-muted-foreground">{site.label}</span>
+                        )}
+                        {site.enabled ? (
+                          <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold border border-teal-500/25 bg-teal-500/5 text-teal-400 uppercase">
+                            Active
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold border border-border/25 bg-white/5 text-muted-foreground uppercase">
+                            Disabled
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-1.5 shrink-0">
+                      <button
+                        onClick={() => handleToggleSite(site)}
+                        disabled={!!siteActionId}
+                        title={site.enabled ? 'Disable site' : 'Enable site'}
+                        className="p-1.5 rounded-md hover:bg-white/5 transition-colors disabled:opacity-50"
+                      >
+                        {site.enabled
+                          ? <ToggleRight className="h-5 w-5 text-emerald-400" />
+                          : <ToggleLeft className="h-5 w-5 text-muted-foreground" />}
+                      </button>
+                      <button
+                        onClick={() => handleDeleteSite(site)}
+                        disabled={!!siteActionId}
+                        title="Remove site"
+                        className="p-1.5 rounded-md hover:bg-red-500/10 text-muted-foreground hover:text-red-400 transition-colors disabled:opacity-50"
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
           )}
         </div>
