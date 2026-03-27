@@ -9,6 +9,7 @@ import Login from "./pages/Login";
 import OwnerAdmin from "./pages/OwnerAdmin";
 import Privacy from "./pages/Privacy";
 import Billing from "./pages/Billing";
+import Personal from "./pages/Personal";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -27,6 +28,7 @@ const App = () => (
           <Route path="/admin" element={<OwnerAdmin />} />
           <Route path="/privacy" element={<Privacy />} />
           <Route path="/billing" element={<Billing />} />
+          <Route path="/personal" element={<Personal />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
