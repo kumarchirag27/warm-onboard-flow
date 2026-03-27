@@ -30,6 +30,15 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'Missing required fields' });
   }
 
+  // Input format validation — prevent oversized or malformed values
+  const emailRe  = /^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/;
+  const domainRe = /^[a-z0-9.\-]+\.[a-z]{2,}$/i;
+  if (!emailRe.test(email))           return res.status(400).json({ error: 'Invalid email format' });
+  if (!domainRe.test(domain))         return res.status(400).json({ error: 'Invalid domain format' });
+  if (String(orgName).length  > 255)  return res.status(400).json({ error: 'orgName too long' });
+  if (String(fullName).length > 255)  return res.status(400).json({ error: 'fullName too long' });
+  if (String(jobTitle).length > 255)  return res.status(400).json({ error: 'jobTitle too long' });
+
   const RESEND_API_KEY = process.env.RESEND_API_KEY;
   const RESEND_FROM    = process.env.RESEND_FROM    || 'SentraShield <noreply@sentrashield.com>';
   const OWNER_EMAIL    = process.env.OWNER_EMAIL    || 'admin@sentrashield.com';

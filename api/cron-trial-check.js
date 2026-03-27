@@ -206,10 +206,12 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  // Authenticate — Vercel injects Authorization: Bearer {CRON_SECRET} automatically
-  const CRON_SECRET = process.env.CRON_SECRET || '';
+  // Authenticate — Vercel injects Authorization: Bearer {CRON_SECRET} automatically.
+  // Secret MUST be configured; requests are rejected if the env var is absent.
+  const CRON_SECRET = process.env.CRON_SECRET;
+  if (!CRON_SECRET) return res.status(500).json({ error: 'CRON_SECRET not configured' });
   const authHeader  = (req.headers['authorization'] || '').replace('Bearer ', '').trim();
-  if (CRON_SECRET && authHeader !== CRON_SECRET) {
+  if (authHeader !== CRON_SECRET) {
     return res.status(401).json({ error: 'Unauthorized' });
   }
 

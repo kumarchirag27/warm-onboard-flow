@@ -155,10 +155,12 @@ async function sendEmail(resendKey, from, to, subject, html) {
 
 // ── Main handler ──────────────────────────────────────────────────────────────
 export default async function handler(req, res) {
-  // Auth: Vercel auto-injects CRON_SECRET for scheduled cron invocations
-  const CRON_SECRET = process.env.CRON_SECRET || '';
+  // Auth: Vercel auto-injects CRON_SECRET for scheduled cron invocations.
+  // Secret MUST be configured; requests are rejected if the env var is absent.
+  const CRON_SECRET = process.env.CRON_SECRET;
+  if (!CRON_SECRET) return res.status(500).json({ error: 'CRON_SECRET not configured' });
   const authHeader  = (req.headers['authorization'] || '').replace('Bearer ', '').trim();
-  if (CRON_SECRET && authHeader !== CRON_SECRET) {
+  if (authHeader !== CRON_SECRET) {
     return res.status(401).json({ error: 'Unauthorized' });
   }
 

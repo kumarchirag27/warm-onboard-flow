@@ -87,7 +87,7 @@ export default async function handler(req, res) {
     const trialEndStr  = trialEndsAt.toLocaleDateString('en-GB', { day:'numeric', month:'long', year:'numeric' });
     if (SUPABASE_ANON_KEY || SUPABASE_SERVICE_KEY) {
       try {
-        await fetch(`${SUPABASE_URL}/auth/v1/magiclink`, {
+        const magicLinkRes = await fetch(`${SUPABASE_URL}/auth/v1/magiclink`, {
           method: 'POST',
           headers: {
             'apikey':        SUPABASE_SERVICE_KEY || SUPABASE_ANON_KEY,
@@ -99,8 +99,13 @@ export default async function handler(req, res) {
             redirect_to: dashboardUrl,
           }),
         });
+        if (!magicLinkRes.ok) {
+          const errText = await magicLinkRes.text();
+          console.warn(`Magic link failed (${magicLinkRes.status}) — org approved but no link sent:`, errText);
+          // Non-fatal — org is still approved. Owner can resend manually.
+        }
       } catch (e) {
-        console.warn('Magic link failed:', e);
+        console.warn('Magic link request error — org approved but no link sent:', e);
         // Non-fatal — org is still approved. Owner can resend manually.
       }
     }
