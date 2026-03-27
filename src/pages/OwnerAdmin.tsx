@@ -156,6 +156,7 @@ const OwnerAdmin = () => {
   const [filter, setFilter]           = useState<Filter>('pending');
   const [loading, setLoading]         = useState(false);
   const [actionId, setActionId]       = useState<string | null>(null);
+  const [resendId, setResendId]       = useState<string | null>(null);
   const [toast, setToast]             = useState<{ msg: string; ok: boolean } | null>(null);
   const [rejectTarget, setRejectTarget] = useState<Org | null>(null);
   const [rejectReason, setRejectReason] = useState('Domain could not be verified.');
@@ -414,6 +415,26 @@ const OwnerAdmin = () => {
     sessionStorage.setItem(SESSION_KEY, trimmed);
     setAdminToken(trimmed);
     setAuthed(true);
+  };
+
+  // ── Resend Magic Link ─────────────────────────────────────────
+  const handleResendMagicLink = async (org: Org) => {
+    if (resendId) return;
+    setResendId(org.id);
+    try {
+      const res = await fetch('/api/admin-resend-magic-link', {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${adminToken}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ orgId: org.id }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed');
+      showToast(`✓ Login link resent to ${org.admin_email}`);
+    } catch (err: unknown) {
+      showToast(err instanceof Error ? err.message : 'Failed to resend link', false);
+    } finally {
+      setResendId(null);
+    }
   };
 
   // ── Approve ──────────────────────────────────────────────────
@@ -1193,6 +1214,16 @@ const OwnerAdmin = () => {
                     >
                       <CreditCard className="h-3.5 w-3.5" />
                       {actionId === org.id ? 'Working…' : org.subscription_status === 'active' ? 'Extend' : 'Activate'}
+                    </button>
+                    <button
+                      onClick={() => handleResendMagicLink(org)}
+                      disabled={!!resendId}
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold
+                        bg-sky-500/10 hover:bg-sky-500/20 text-sky-400 border border-sky-500/25
+                        transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <Mail className="h-3.5 w-3.5" />
+                      {resendId === org.id ? 'Sending…' : 'Resend Link'}
                     </button>
                   </>
                 )}
