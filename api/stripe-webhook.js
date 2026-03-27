@@ -154,6 +154,7 @@ export default async function handler(req, res) {
     }
 
     // Send license key email via Resend
+    const activateUrl = `${SITE_URL}/activate?key=${encodeURIComponent(licenseKey)}`;
     if (RESEND_API_KEY) {
       const html = `
 <!DOCTYPE html>
@@ -163,27 +164,37 @@ export default async function handler(req, res) {
   <div style="max-width:520px;margin:32px auto;background:#12121f;border:1px solid #1a2a3a;border-radius:12px;overflow:hidden;">
     <div style="background:linear-gradient(135deg,#0a1a2a,#0d1a0d);padding:24px 28px;border-bottom:1px solid #1a2a3a;">
       <p style="margin:0;font-size:11px;font-weight:700;letter-spacing:2px;color:#10b981;text-transform:uppercase;">SentraShield</p>
-      <h1 style="margin:8px 0 0;font-size:20px;font-weight:700;color:#f0fff4;">Your Pro license key ✓</h1>
+      <h1 style="margin:8px 0 0;font-size:20px;font-weight:700;color:#f0fff4;">Your Pro license is ready ✓</h1>
     </div>
     <div style="padding:24px 28px;">
       <p style="color:#cbd5e1;font-size:14px;line-height:1.7;">
-        Thanks for subscribing to SentraShield Personal Pro!<br><br>
-        Copy the license key below and paste it into the extension popup to activate.
+        Thanks for subscribing to SentraShield Personal Pro! Click the button below to activate the extension in one click.
       </p>
-      <div style="background:#0a0f1a;border:1px solid #1a3a2a;border-radius:8px;padding:16px;margin:20px 0;text-align:center;">
-        <p style="margin:0 0 6px;color:#6b7280;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1px;">Your License Key</p>
-        <code style="color:#34d399;font-family:monospace;font-size:14px;font-weight:700;word-break:break-all;">${licenseKey}</code>
+
+      <!-- One-click activate button -->
+      <div style="text-align:center;margin:24px 0;">
+        <a href="${activateUrl}"
+           style="display:inline-block;background:#2dd4bf;color:#080c14;font-weight:700;font-size:15px;
+                  text-decoration:none;padding:14px 32px;border-radius:10px;letter-spacing:0.3px;">
+          Activate Pro Now →
+        </a>
+        <p style="margin:10px 0 0;color:#6b7280;font-size:11px;">Opens in Chrome and activates instantly</p>
       </div>
-      <p style="color:#cbd5e1;font-size:13px;line-height:1.7;"><strong style="color:#f0fff4;">How to activate:</strong></p>
-      <ol style="color:#94a3b8;font-size:13px;line-height:2;padding-left:20px;">
-        <li>Open Chrome and click the SentraShield extension icon</li>
-        <li>Click <strong style="color:#e2e8f0;">"Activate Pro →"</strong> in the footer</li>
-        <li>Paste your license key and click Activate</li>
-        <li>Done — all 25 detection rules and hard block mode are now active</li>
-      </ol>
+
+      <!-- Manual fallback key -->
+      <div style="background:#0a0f1a;border:1px solid #1a3a2a;border-radius:8px;padding:16px;margin:20px 0;">
+        <p style="margin:0 0 6px;color:#6b7280;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1px;">
+          Manual fallback — your license key
+        </p>
+        <code style="color:#34d399;font-family:monospace;font-size:13px;font-weight:700;word-break:break-all;">${licenseKey}</code>
+        <p style="margin:8px 0 0;color:#6b7280;font-size:11px;line-height:1.6;">
+          If the button above doesn't work: open the extension popup → click <strong style="color:#94a3b8;">"Get Pro →"</strong> → paste this key.
+        </p>
+      </div>
+
       <p style="color:#6b7280;font-size:12px;margin-top:20px;">
         Keep this email — you'll need the key if you reinstall the extension.<br>
-        To manage your subscription, visit <a href="${SITE_URL}/personal" style="color:#34d399;">${SITE_URL}/personal</a>
+        Manage your subscription: <a href="${SITE_URL}/personal" style="color:#34d399;">${SITE_URL}/personal</a>
       </p>
     </div>
     <div style="padding:16px 28px;border-top:1px solid #1a2a3a;background:#0c0c18;">
