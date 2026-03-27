@@ -10,6 +10,8 @@
 // ⚠️  NEVER expose SUPABASE_SERVICE_KEY to the browser.
 //     This route is server-side only.
 
+const BASE_DOMAIN = 'ai-dlp.sentrashield.com';
+
 export default async function handler(req, res) {
   // ── Auth check ────────────────────────────────────────────────
   const token = (req.headers['authorization'] || '').replace('Bearer ', '').trim();
@@ -25,6 +27,44 @@ export default async function handler(req, res) {
   if (!SUPABASE_SERVICE_KEY) {
     return res.status(500).json({ error: 'SUPABASE_SERVICE_KEY not configured' });
   }
+
+  // ── POST: resend magic link ────────────────────────────────────
+  if (req.method === 'POST') {
+    const { orgId } = req.body || {};
+    if (!orgId) return res.status(400).json({ error: 'Missing orgId' });
+
+    try {
+      const orgRes = await fetch(
+        `${SUPABASE_URL}/rest/v1/organizations?id=eq.${encodeURIComponent(orgId)}&select=id,name,admin_email,slug,status`,
+        { headers: { 'apikey': SUPABASE_SERVICE_KEY, 'Authorization': `Bearer ${SUPABASE_SERVICE_KEY}` } }
+      );
+      const orgs = await orgRes.json();
+      const org  = Array.isArray(orgs) ? orgs[0] : null;
+      if (!org) return res.status(404).json({ error: 'Organization not found' });
+      if (org.status !== 'approved') return res.status(400).json({ error: 'Organization is not approved' });
+
+      const magicRes = await fetch(`${SUPABASE_URL}/auth/v1/magiclink`, {
+        method: 'POST',
+        headers: {
+          'apikey': SUPABASE_SERVICE_KEY, 'Authorization': `Bearer ${SUPABASE_SERVICE_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email: org.admin_email, redirect_to: `https://${org.slug}.${BASE_DOMAIN}/dashboard` }),
+      });
+
+      if (!magicRes.ok) {
+        const errText = await magicRes.text();
+        console.error('Magic link resend failed:', errText);
+        return res.status(502).json({ error: 'Failed to send magic link' });
+      }
+      return res.status(200).json({ ok: true, message: `Magic link sent to ${org.admin_email}` });
+    } catch (err) {
+      console.error('admin-orgs POST error:', err);
+      return res.status(500).json({ error: 'Internal server error' });
+    }
+  }
+
+  if (req.method !== 'GET') return res.status(405).json({ error: 'Method not allowed' });
 
   try {
     // Fetch all orgs, ordered by newest first

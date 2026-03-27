@@ -422,7 +422,7 @@ const OwnerAdmin = () => {
     if (resendId) return;
     setResendId(org.id);
     try {
-      const res = await fetch('/api/admin-resend-magic-link', {
+      const res = await fetch('/api/admin-orgs', {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${adminToken}`, 'Content-Type': 'application/json' },
         body: JSON.stringify({ orgId: org.id }),
