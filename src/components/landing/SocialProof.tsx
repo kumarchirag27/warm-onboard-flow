@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useScrollReveal } from "@/hooks/use-scroll-reveal";
+import { ShieldCheck, Zap, Eye, Globe } from "lucide-react";
 
 interface CounterProps {
   to: number;
@@ -47,16 +48,49 @@ const AnimatedCounter = ({ to, suffix = "", prefix = "", label, duration = 1800 
   );
 };
 
-const LOGOS = [
-  "Meridian Tech",
-  "Gulf Fintech",
-  "Emirates Dev Co",
-  "Nexus Systems",
-  "ArabNet Labs",
-  "Falcon Cloud",
-  "Oasis Digital",
-  "Dune Analytics",
+const TRUST_POINTS = [
+  {
+    icon: ShieldCheck,
+    title: "No data leaves the device",
+    body: "All detection runs locally in the browser. SentraShield never receives your text.",
+  },
+  {
+    icon: Zap,
+    title: "<50ms detection latency",
+    body: "Regex scanning completes before the browser dispatches the paste event.",
+  },
+  {
+    icon: Eye,
+    title: "25+ built-in DLP patterns",
+    body: "API keys, PII, credentials, financial data — covering OWASP and UAE PDPL requirements.",
+  },
+  {
+    icon: Globe,
+    title: "Works on 500+ AI sites",
+    body: "ChatGPT, Claude, Gemini, Perplexity, Copilot and any web-based LLM interface.",
+  },
 ];
+
+interface TrustCardProps {
+  icon: React.ElementType;
+  title: string;
+  body: string;
+}
+
+const TrustCard = ({ icon: Icon, title, body }: TrustCardProps) => {
+  const ref = useScrollReveal<HTMLDivElement>();
+  return (
+    <div ref={ref} className="reveal flex gap-3 items-start">
+      <div className="shrink-0 mt-0.5 rounded bg-primary/10 p-2 text-primary">
+        <Icon className="h-4 w-4" />
+      </div>
+      <div>
+        <p className="text-sm font-semibold mb-0.5">{title}</p>
+        <p className="text-xs text-muted-foreground leading-relaxed">{body}</p>
+      </div>
+    </div>
+  );
+};
 
 const SocialProof = () => {
   const headingRef = useScrollReveal();
@@ -67,28 +101,21 @@ const SocialProof = () => {
       <div className="container mx-auto px-6">
         <div
           ref={headingRef as React.RefObject<HTMLDivElement>}
-          className="reveal text-center mb-10"
+          className="reveal text-center mb-14"
         >
           <p className="text-sm font-mono text-muted-foreground uppercase tracking-widest mb-3">
-            Trusted by security-first teams
+            Why teams choose AI Shield
           </p>
-          <p className="text-muted-foreground text-base">
-            Protecting organizations across the UAE and GCC from AI-driven data leaks
-          </p>
+          <h2 className="text-2xl font-bold tracking-wide sm:text-3xl">
+            Privacy-first DLP, <span className="text-gradient">built for AI</span>
+          </h2>
         </div>
 
-        {/* Logo marquee */}
-        <div className="overflow-hidden mb-14">
-          <div className="flex gap-12 marquee-track whitespace-nowrap">
-            {[...LOGOS, ...LOGOS].map((name, i) => (
-              <span
-                key={i}
-                className="text-sm font-semibold text-muted-foreground/50 tracking-wider uppercase inline-block"
-              >
-                {name}
-              </span>
-            ))}
-          </div>
+        {/* Trust points grid */}
+        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4 mb-16">
+          {TRUST_POINTS.map((tp) => (
+            <TrustCard key={tp.title} {...tp} />
+          ))}
         </div>
 
         {/* Animated counters */}
@@ -96,10 +123,10 @@ const SocialProof = () => {
           ref={statsRef}
           className="reveal grid grid-cols-2 gap-8 sm:grid-cols-4 border border-border/50 rounded bg-card/50 px-8 py-10"
         >
-          <AnimatedCounter to={25}  suffix="+"  label="Data leak patterns blocked" />
-          <AnimatedCounter to={98}  suffix="%"  label="Detection accuracy" />
-          <AnimatedCounter to={500} suffix="+"  label="Teams protected" />
-          <AnimatedCounter to={50}  prefix="<"  suffix="ms"  label="Detection latency" />
+          <AnimatedCounter to={25}  suffix="+"  label="DLP patterns built-in" />
+          <AnimatedCounter to={50}  prefix="<"  suffix="ms" label="Detection latency" />
+          <AnimatedCounter to={500} suffix="+"  label="AI sites covered" />
+          <AnimatedCounter to={100} suffix="%"  label="Client-side — no data sent" />
         </div>
       </div>
     </section>

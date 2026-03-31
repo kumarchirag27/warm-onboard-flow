@@ -54,10 +54,12 @@ const Hero = () => {
                   <ArrowRight className="ml-1 h-4 w-4" />
                 </Button>
               </Link>
-              <Button variant="heroOutline" size="lg" className="text-base px-8">
-                <Chrome className="mr-1 h-4 w-4" />
-                Install Extension
-              </Button>
+              <a href="https://chrome.google.com/webstore" target="_blank" rel="noreferrer">
+                <Button variant="heroOutline" size="lg" className="text-base px-8 w-full sm:w-auto">
+                  <Chrome className="mr-1 h-4 w-4" />
+                  Add to Chrome — Free
+                </Button>
+              </a>
             </div>
 
             {/* Trust micro-copy */}
@@ -89,9 +91,9 @@ const Hero = () => {
         {/* Stats row */}
         <div className="mt-20 grid grid-cols-3 gap-8 border-t border-border/40 pt-10 max-w-2xl mx-auto lg:mx-0">
           {[
-            { value: "2M+",   label: "Paste events scanned"  },
-            { value: "<50ms", label: "Detection latency"     },
-            { value: "25+",   label: "Leak patterns blocked" },
+            { value: "25+",   label: "DLP patterns built-in" },
+            { value: "<50ms", label: "Detection latency"      },
+            { value: "500+",  label: "AI sites covered"       },
           ].map((s) => (
             <div key={s.label} className="text-center">
               <div className="text-2xl font-bold text-gradient sm:text-3xl font-mono">{s.value}</div>

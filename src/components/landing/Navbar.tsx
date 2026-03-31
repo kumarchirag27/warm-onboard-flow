@@ -14,6 +14,7 @@ const Navbar = () => {
           <a href="#features" className="text-sm text-muted-foreground transition-colors hover:text-foreground">Features</a>
           <a href="#pricing" className="text-sm text-muted-foreground transition-colors hover:text-foreground">Pricing</a>
           <a href="#faq" className="text-sm text-muted-foreground transition-colors hover:text-foreground">FAQ</a>
+          <a href="https://sentrashield.com" className="text-sm text-muted-foreground/60 transition-colors hover:text-muted-foreground border-l border-border/50 pl-8">Enterprise →</a>
         </div>
 
         <div className="flex items-center gap-3">
