@@ -9,10 +9,9 @@ const Footer = () => {
 
           <div className="flex gap-6 text-sm text-muted-foreground">
             <a href="/privacy" className="hover:text-foreground transition-colors">Privacy</a>
-            <a href="/billing" className="hover:text-foreground transition-colors">Billing</a>
             <a href="/personal" className="hover:text-foreground transition-colors">Personal</a>
-            <a href="#" className="hover:text-foreground transition-colors">Security</a>
-            <a href="#" className="hover:text-foreground transition-colors">Status</a>
+            <a href="mailto:support@sentrashield.com" className="hover:text-foreground transition-colors">Support</a>
+            <a href="https://sentrashield.com" className="hover:text-foreground transition-colors">Enterprise</a>
           </div>
 
           <p className="text-sm text-muted-foreground">

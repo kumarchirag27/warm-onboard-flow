@@ -46,7 +46,7 @@ const CTASection = () => {
           </div>
 
           <p className="mt-6 text-xs text-muted-foreground">
-            Used by security teams across UAE · No proxy, no VPN, no data sent to our servers
+            No proxy · No VPN · No data sent to our servers
           </p>
         </div>
       </div>

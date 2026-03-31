@@ -93,7 +93,7 @@ const Hero = () => {
           {[
             { value: "25+",   label: "DLP patterns built-in" },
             { value: "<50ms", label: "Detection latency"      },
-            { value: "500+",  label: "AI sites covered"       },
+            { value: "100%",  label: "Client-side, no upload" },
           ].map((s) => (
             <div key={s.label} className="text-center">
               <div className="text-2xl font-bold text-gradient sm:text-3xl font-mono">{s.value}</div>

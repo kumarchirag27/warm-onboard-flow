@@ -66,8 +66,8 @@ const TRUST_POINTS = [
   },
   {
     icon: Globe,
-    title: "Works on 500+ AI sites",
-    body: "ChatGPT, Claude, Gemini, Perplexity, Copilot and any web-based LLM interface.",
+    title: "Works on any AI site",
+    body: "ChatGPT, Claude, Gemini, Perplexity, Copilot — any web-based LLM with a text input.",
   },
 ];
 
@@ -125,7 +125,7 @@ const SocialProof = () => {
         >
           <AnimatedCounter to={25}  suffix="+"  label="DLP patterns built-in" />
           <AnimatedCounter to={50}  prefix="<"  suffix="ms" label="Detection latency" />
-          <AnimatedCounter to={500} suffix="+"  label="AI sites covered" />
+          <AnimatedCounter to={7}   suffix=" day" label="Free trial, no card" />
           <AnimatedCounter to={100} suffix="%"  label="Client-side — no data sent" />
         </div>
       </div>
