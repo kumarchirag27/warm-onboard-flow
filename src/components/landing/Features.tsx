@@ -1,4 +1,6 @@
 import { ShieldAlert, Scan, Bell, BarChart3, Users, Plug } from "lucide-react";
+import { useScrollReveal } from "@/hooks/use-scroll-reveal";
+import { type LucideIcon } from "lucide-react";
 
 const features = [
   {
@@ -33,11 +35,37 @@ const features = [
   },
 ];
 
-const Features = () => {
+interface FeatureCardProps {
+  icon: LucideIcon;
+  title: string;
+  description: string;
+  delay: number;
+}
+
+const FeatureCard = ({ icon: Icon, title, description, delay }: FeatureCardProps) => {
+  const ref = useScrollReveal<HTMLDivElement>();
   return (
-    <section id="features" className="relative py-24 lg:py-32">
+    <div
+      ref={ref}
+      style={{ animationDelay: `${delay}s` }}
+      className="reveal group relative rounded border border-border/50 card-gradient p-6 transition-all duration-300 hover:border-primary/40 hover:glow"
+    >
+      <div className="mb-4 inline-flex rounded-lg bg-primary/10 p-2.5 text-primary">
+        <Icon className="h-5 w-5" />
+      </div>
+      <h3 className="mb-2 text-lg font-semibold">{title}</h3>
+      <p className="text-sm text-muted-foreground leading-relaxed">{description}</p>
+    </div>
+  );
+};
+
+const Features = () => {
+  const headingRef = useScrollReveal<HTMLDivElement>();
+
+  return (
+    <section id="features" className="relative py-24 lg:py-32 border-t border-border/40">
       <div className="container mx-auto px-6">
-        <div className="mx-auto max-w-2xl text-center mb-16 accent-line-center">
+        <div ref={headingRef} className="reveal mx-auto max-w-2xl text-center mb-16 accent-line-center">
           <h2 className="text-3xl font-bold tracking-wide sm:text-4xl mb-4 uppercase">
             Your team uses AI. <span className="text-gradient">Keep it safe.</span>
           </h2>
@@ -47,17 +75,8 @@ const Features = () => {
         </div>
 
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {features.map((feature) => (
-            <div
-              key={feature.title}
-              className="group relative rounded border border-border/50 card-gradient p-6 transition-all duration-300 hover:border-primary/40 hover:glow"
-            >
-              <div className="mb-4 inline-flex rounded-lg bg-primary/10 p-2.5 text-primary">
-                <feature.icon className="h-5 w-5" />
-              </div>
-              <h3 className="mb-2 text-lg font-semibold">{feature.title}</h3>
-              <p className="text-sm text-muted-foreground leading-relaxed">{feature.description}</p>
-            </div>
+          {features.map((f, i) => (
+            <FeatureCard key={f.title} {...f} delay={i * 0.08} />
           ))}
         </div>
       </div>
