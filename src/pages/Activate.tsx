@@ -86,7 +86,7 @@ export default function Activate() {
         <div className="text-center mb-8">
           <div className="flex items-center justify-center gap-2 mb-6">
             <span className="text-white font-bold text-lg tracking-tight">SentraShield</span>
-            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#1ec890]/10 text-[#1ec890] border border-[#1ec890]/20 uppercase tracking-widest">AI DLP</span>
+            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#6c5ce7]/10 text-[#6c5ce7] border border-[#6c5ce7]/20 uppercase tracking-widest">AI DLP</span>
           </div>
         </div>
 
@@ -96,8 +96,8 @@ export default function Activate() {
           {/* Loading */}
           {state === "loading" && (
             <div className="p-10 text-center">
-              <div className="w-12 h-12 rounded-2xl bg-[#2dd4bf]/10 border border-[#2dd4bf]/20 flex items-center justify-center mx-auto mb-5 animate-pulse">
-                <ShieldCheck className="w-6 h-6 text-[#2dd4bf]" />
+              <div className="w-12 h-12 rounded-2xl bg-[#7e67fe]/10 border border-[#7e67fe]/20 flex items-center justify-center mx-auto mb-5 animate-pulse">
+                <ShieldCheck className="w-6 h-6 text-[#7e67fe]" />
               </div>
               <p className="text-[#48607f] text-sm">Activating your Pro license…</p>
             </div>
@@ -106,8 +106,8 @@ export default function Activate() {
           {/* Activated */}
           {(state === "activated" || state === "already_active") && (
             <div className="p-10 text-center">
-              <div className="w-14 h-14 rounded-2xl bg-[#1ec890]/10 border border-[#1ec890]/20 flex items-center justify-center mx-auto mb-5">
-                <ShieldCheck className="w-7 h-7 text-[#1ec890]" />
+              <div className="w-14 h-14 rounded-2xl bg-[#6c5ce7]/10 border border-[#6c5ce7]/20 flex items-center justify-center mx-auto mb-5">
+                <ShieldCheck className="w-7 h-7 text-[#6c5ce7]" />
               </div>
               <h1 className="text-xl font-bold text-white mb-2">
                 {state === "already_active" ? "Already Active!" : "Pro Activated!"}
@@ -116,7 +116,7 @@ export default function Activate() {
                 SentraShield Personal Pro is now active in your browser.
                 All 25 detection rules and hard-block mode are enabled.
               </p>
-              <div className="bg-[#1ec890]/5 border border-[#1ec890]/15 rounded-xl px-4 py-3 text-[11px] text-[#6ee7b7] text-center">
+              <div className="bg-[#6c5ce7]/5 border border-[#6c5ce7]/15 rounded-xl px-4 py-3 text-[11px] text-[#c4b5fd] text-center">
                 Click the SentraShield extension icon to see your Pro badge
               </div>
             </div>
@@ -137,7 +137,7 @@ export default function Activate() {
                 href={CWSLink}
                 target="_blank"
                 rel="noreferrer"
-                className="block w-full text-center py-3 rounded-xl bg-[#2dd4bf] text-[#080c14] font-semibold text-sm mb-4 hover:opacity-90 transition-opacity"
+                className="block w-full text-center py-3 rounded-xl bg-[#7e67fe] text-[#080c14] font-semibold text-sm mb-4 hover:opacity-90 transition-opacity"
               >
                 Install from Chrome Web Store →
               </a>
@@ -147,7 +147,7 @@ export default function Activate() {
               </p>
               <button
                 onClick={() => { setState("loading"); setTimeout(() => attemptAutoActivate(key), 500); }}
-                className="block w-full text-center py-2.5 rounded-xl border border-[#1c2d45] text-[#94b4d8] text-sm hover:border-[#2dd4bf]/40 transition-colors"
+                className="block w-full text-center py-2.5 rounded-xl border border-[#1c2d45] text-[#94b4d8] text-sm hover:border-[#7e67fe]/40 transition-colors"
               >
                 Try Again
               </button>
@@ -160,8 +160,8 @@ export default function Activate() {
                   </p>
                   <div className="flex items-center gap-2 bg-[#111827] border border-[#1c2d45] rounded-lg px-3 py-2">
                     <span className="font-mono text-xs text-[#dde9f8] flex-1 truncate">{key}</span>
-                    <button onClick={copyKey} className="flex-shrink-0 text-[#48607f] hover:text-[#2dd4bf] transition-colors">
-                      {copied ? <Check className="w-4 h-4 text-[#1ec890]" /> : <Copy className="w-4 h-4" />}
+                    <button onClick={copyKey} className="flex-shrink-0 text-[#48607f] hover:text-[#7e67fe] transition-colors">
+                      {copied ? <Check className="w-4 h-4 text-[#6c5ce7]" /> : <Copy className="w-4 h-4" />}
                     </button>
                   </div>
                 </div>
@@ -179,7 +179,7 @@ export default function Activate() {
               <p className="text-[#48607f] text-sm leading-relaxed mb-6">
                 This activation link is missing a valid license key. Please use the link from your welcome email.
               </p>
-              <a href="mailto:support@sentrashield.com" className="text-[#2dd4bf] text-sm hover:underline">
+              <a href="mailto:support@sentrashield.com" className="text-[#7e67fe] text-sm hover:underline">
                 Contact support →
               </a>
             </div>
@@ -198,12 +198,12 @@ export default function Activate() {
               {key && (
                 <div className="flex items-center gap-2 bg-[#111827] border border-[#1c2d45] rounded-lg px-3 py-2 mb-5">
                   <span className="font-mono text-xs text-[#dde9f8] flex-1 truncate">{key}</span>
-                  <button onClick={copyKey} className="flex-shrink-0 text-[#48607f] hover:text-[#2dd4bf] transition-colors">
-                    {copied ? <Check className="w-4 h-4 text-[#1ec890]" /> : <Copy className="w-4 h-4" />}
+                  <button onClick={copyKey} className="flex-shrink-0 text-[#48607f] hover:text-[#7e67fe] transition-colors">
+                    {copied ? <Check className="w-4 h-4 text-[#6c5ce7]" /> : <Copy className="w-4 h-4" />}
                   </button>
                 </div>
               )}
-              <a href="mailto:support@sentrashield.com" className="text-[#2dd4bf] text-sm hover:underline">
+              <a href="mailto:support@sentrashield.com" className="text-[#7e67fe] text-sm hover:underline">
                 Contact support →
               </a>
             </div>

@@ -97,7 +97,7 @@ function fmtDate(iso: string): string {
 function StatusBadge({ status }: { status: Org['status'] }) {
   const map = {
     pending:  { bg: 'bg-amber-500/10',  text: 'text-amber-400',  border: 'border-amber-500/25',  icon: <Clock className="h-3 w-3" />,       label: 'Pending'  },
-    approved: { bg: 'bg-emerald-500/10', text: 'text-emerald-400', border: 'border-emerald-500/25', icon: <CheckCircle className="h-3 w-3" />, label: 'Approved' },
+    approved: { bg: 'bg-[#7e67fe]/10', text: 'text-[#a78bfa]', border: 'border-[#7e67fe]/25', icon: <CheckCircle className="h-3 w-3" />, label: 'Approved' },
     rejected: { bg: 'bg-red-500/10',    text: 'text-red-400',    border: 'border-red-500/25',    icon: <XCircle className="h-3 w-3" />,     label: 'Rejected' },
   };
   const s = status ? map[status] : map.pending;
@@ -580,7 +580,7 @@ const OwnerAdmin = () => {
       {toast && (
         <div className={`fixed top-4 right-4 z-50 px-4 py-3 rounded-lg text-sm font-medium shadow-xl border
           ${toast.ok
-            ? 'bg-emerald-900/80 border-emerald-500/30 text-emerald-300'
+            ? 'bg-[#1a0a2e]/80 border-[#7e67fe]/30 text-[#c4b5fd]'
             : 'bg-red-900/80 border-red-500/30 text-red-300'}`}>
           {toast.msg}
         </div>
@@ -734,7 +734,7 @@ const OwnerAdmin = () => {
           {[
             { label: 'Total Orgs',  value: stats.total,    color: 'text-foreground' },
             { label: 'Pending',     value: stats.pending,  color: 'text-amber-400'  },
-            { label: 'Approved',    value: stats.approved, color: 'text-emerald-400'},
+            { label: 'Approved',    value: stats.approved, color: 'text-[#a78bfa]'},
             { label: 'Rejected',    value: stats.rejected, color: 'text-red-400'    },
           ].map(s => (
             <div key={s.label} className="bg-[#080c14] px-6 py-4 border-r border-[#1c2d45] last:border-r-0">
@@ -772,11 +772,11 @@ const OwnerAdmin = () => {
           onClick={() => setMainTab('sites')}
           className={`flex items-center gap-1.5 px-4 py-1.5 rounded-md text-xs font-semibold transition-colors
             ${mainTab === 'sites'
-              ? 'bg-teal-500/15 text-teal-300 border border-teal-500/25'
+              ? 'bg-[#7e67fe]/15 text-[#c4b5fd] border border-[#7e67fe]/25'
               : 'text-muted-foreground hover:text-foreground hover:bg-white/5'}`}
         >
           <Globe className="h-3.5 w-3.5" /> Monitored Sites
-          <span className="ml-1 px-1.5 py-0.5 rounded-full bg-teal-500/20 text-teal-300 text-[10px] font-bold">
+          <span className="ml-1 px-1.5 py-0.5 rounded-full bg-[#7e67fe]/20 text-[#c4b5fd] text-[10px] font-bold">
             {sites.filter(s => s.enabled).length}/{sites.length}
           </span>
         </button>
@@ -923,7 +923,7 @@ const OwnerAdmin = () => {
                           className="p-1.5 rounded-md hover:bg-white/5 transition-colors disabled:opacity-50"
                         >
                           {rule.enabled
-                            ? <ToggleRight className="h-5 w-5 text-emerald-400" />
+                            ? <ToggleRight className="h-5 w-5 text-[#a78bfa]" />
                             : <ToggleLeft className="h-5 w-5 text-muted-foreground" />}
                         </button>
                         <button
@@ -965,7 +965,7 @@ const OwnerAdmin = () => {
               <button
                 onClick={() => setShowAddSite(v => !v)}
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold
-                  bg-teal-500/10 hover:bg-teal-500/20 text-teal-300 border border-teal-500/25 transition-colors"
+                  bg-[#7e67fe]/10 hover:bg-[#7e67fe]/20 text-[#c4b5fd] border border-[#7e67fe]/25 transition-colors"
               >
                 <Plus className="h-3.5 w-3.5" /> Add Site
               </button>
@@ -974,8 +974,8 @@ const OwnerAdmin = () => {
 
           {/* Add site form */}
           {showAddSite && (
-            <form onSubmit={handleAddSite} className="mb-4 rounded-xl border border-teal-500/20 bg-teal-500/5 p-4 space-y-3">
-              <p className="text-xs font-semibold text-teal-300 mb-2">Add Monitored Site</p>
+            <form onSubmit={handleAddSite} className="mb-4 rounded-xl border border-[#7e67fe]/20 bg-[#7e67fe]/5 p-4 space-y-3">
+              <p className="text-xs font-semibold text-[#c4b5fd] mb-2">Add Monitored Site</p>
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="text-xs text-muted-foreground block mb-1">Hostname</label>
@@ -1003,7 +1003,7 @@ const OwnerAdmin = () => {
                   type="submit"
                   disabled={!!siteActionId}
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold
-                    bg-teal-500/20 hover:bg-teal-500/30 text-teal-300 border border-teal-500/35
+                    bg-[#7e67fe]/20 hover:bg-[#7e67fe]/30 text-[#c4b5fd] border border-[#7e67fe]/35
                     transition-colors disabled:opacity-50"
                 >
                   <Plus className="h-3.5 w-3.5" />
@@ -1028,13 +1028,13 @@ const OwnerAdmin = () => {
                   <div className="flex items-center justify-between gap-3">
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <Globe className="h-3.5 w-3.5 text-teal-400 shrink-0" />
+                        <Globe className="h-3.5 w-3.5 text-[#a78bfa] shrink-0" />
                         <span className="font-mono text-xs font-bold text-foreground">{site.hostname}</span>
                         {site.label && site.label !== site.hostname && (
                           <span className="text-xs text-muted-foreground">{site.label}</span>
                         )}
                         {site.enabled ? (
-                          <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold border border-teal-500/25 bg-teal-500/5 text-teal-400 uppercase">
+                          <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold border border-[#7e67fe]/25 bg-[#7e67fe]/5 text-[#a78bfa] uppercase">
                             Active
                           </span>
                         ) : (
@@ -1052,7 +1052,7 @@ const OwnerAdmin = () => {
                         className="p-1.5 rounded-md hover:bg-white/5 transition-colors disabled:opacity-50"
                       >
                         {site.enabled
-                          ? <ToggleRight className="h-5 w-5 text-emerald-400" />
+                          ? <ToggleRight className="h-5 w-5 text-[#a78bfa]" />
                           : <ToggleLeft className="h-5 w-5 text-muted-foreground" />}
                       </button>
                       <button
@@ -1106,7 +1106,7 @@ const OwnerAdmin = () => {
               org.status === 'pending'
                 ? 'border-amber-500/20 bg-amber-500/5'
                 : org.status === 'approved'
-                ? 'border-emerald-500/15 bg-[#080c14]'
+                ? 'border-[#7e67fe]/15 bg-[#080c14]'
                 : 'border-[#1c2d45] bg-[#080c14] opacity-60'
             }`}
           >
@@ -1233,7 +1233,7 @@ const OwnerAdmin = () => {
                       onClick={() => handleApprove(org)}
                       disabled={!!actionId}
                       className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold
-                        bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/25
+                        bg-[#7e67fe]/10 hover:bg-[#7e67fe]/20 text-[#a78bfa] border border-[#7e67fe]/25
                         transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       <CheckCircle className="h-3.5 w-3.5" />

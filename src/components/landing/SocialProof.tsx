@@ -121,7 +121,7 @@ const SocialProof = () => {
         {/* Animated counters */}
         <div
           ref={statsRef}
-          className="reveal grid grid-cols-2 gap-8 sm:grid-cols-4 border border-border/50 rounded bg-card/50 px-8 py-10"
+          className="reveal grid grid-cols-2 gap-8 sm:grid-cols-4 rounded glass px-8 py-10"
         >
           <AnimatedCounter to={25}  suffix="+"  label="DLP patterns built-in" />
           <AnimatedCounter to={50}  prefix="<"  suffix="ms" label="Detection latency" />

@@ -29,7 +29,7 @@ const CompareSection = () => {
           </p>
         </div>
 
-        <div className="max-w-2xl mx-auto rounded border border-border/50 card-gradient overflow-hidden">
+        <div className="max-w-2xl mx-auto rounded border border-border/50 glass overflow-hidden">
           {/* Header */}
           <div className="grid grid-cols-3 border-b border-border/50 bg-muted/30">
             <div className="px-6 py-4 text-sm text-muted-foreground">Feature</div>
@@ -45,7 +45,7 @@ const CompareSection = () => {
 
           {/* Rows */}
           {rows.map(({ feature, personal, team }) => (
-            <div key={feature} className="grid grid-cols-3 border-b border-border/30 last:border-0">
+            <div key={feature} className="grid grid-cols-3 border-b border-border/30 last:border-0 zebra-row">
               <div className="px-6 py-3.5 text-sm text-muted-foreground">{feature}</div>
               <div className="px-6 py-3.5 flex justify-center items-center border-l border-border/30">
                 {personal

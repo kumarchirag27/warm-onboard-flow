@@ -48,7 +48,7 @@ const FeatureCard = ({ icon: Icon, title, description, delay }: FeatureCardProps
     <div
       ref={ref}
       style={{ animationDelay: `${delay}s` }}
-      className="reveal group relative rounded border border-border/50 card-gradient p-6 transition-all duration-300 hover:border-primary/40 hover:glow"
+      className="reveal group relative rounded border border-border/50 glass p-6 hover-lift hover:border-primary/40 hover:glow"
     >
       <div className="mb-4 inline-flex rounded-lg bg-primary/10 p-2.5 text-primary">
         <Icon className="h-5 w-5" />

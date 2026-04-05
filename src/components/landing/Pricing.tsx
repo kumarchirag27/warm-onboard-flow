@@ -128,10 +128,10 @@ const PlanCard = ({ plan, annual }: PlanCardProps) => {
   return (
     <div
       ref={ref}
-      className={`reveal relative rounded border p-8 transition-all duration-300 flex flex-col ${
+      className={`reveal relative rounded border p-8 flex flex-col hover-lift ${
         plan.featured
-          ? "border-primary/50 card-gradient glow scale-105"
-          : "border-border/50 card-gradient hover:border-primary/30 hover:glow"
+          ? "border-primary/50 glass glow scale-105 shadow-lg-brand"
+          : "border-border/50 glass hover:border-primary/30 hover:glow"
       }`}
     >
       {plan.featured && (

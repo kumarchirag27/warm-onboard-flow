@@ -108,7 +108,7 @@ const ViolationDemo = () => {
       <div className="p-4 space-y-3 min-h-[230px]">
         {/* AI message */}
         <div className="flex gap-2.5">
-          <div className="w-6 h-6 rounded-full bg-emerald-600 flex-shrink-0 grid place-items-center text-[10px] font-bold text-white">
+          <div className="w-6 h-6 rounded-full bg-[#6c5ce7] flex-shrink-0 grid place-items-center text-[10px] font-bold text-white">
             G
           </div>
           <div className="bg-muted/40 rounded px-3 py-2 text-xs text-muted-foreground max-w-[85%]">

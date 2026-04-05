@@ -55,11 +55,11 @@ const Personal = () => {
 
         {/* Success banner */}
         {activated && (
-          <div className="bg-emerald-500/8 border border-emerald-500/25 rounded-xl p-4 mb-10 flex gap-3 items-start">
-            <Check size={18} className="text-emerald-400 shrink-0 mt-0.5" />
+          <div className="bg-[#7e67fe]/8 border border-[#7e67fe]/25 rounded-xl p-4 mb-10 flex gap-3 items-start">
+            <Check size={18} className="text-[#a78bfa] shrink-0 mt-0.5" />
             <div>
               <p className="m-0 font-bold text-[#f0fff4] text-sm">Payment confirmed — check your email</p>
-              <p className="mt-1 text-emerald-300 text-xs leading-relaxed">
+              <p className="mt-1 text-[#c4b5fd] text-xs leading-relaxed">
                 Your license key is on its way. Open the SentraShield extension and click "Activate Pro →" to paste it in.
               </p>
             </div>
@@ -68,7 +68,7 @@ const Personal = () => {
 
         {/* Hero */}
         <div className="text-center mb-12">
-          <div className="inline-flex items-center gap-1.5 bg-teal-400/8 border border-teal-400/20 rounded-full px-3.5 py-1 mb-5 text-[11px] font-bold text-teal-400 tracking-[0.6px] uppercase">
+          <div className="inline-flex items-center gap-1.5 bg-[#a78bfa]/8 border border-[#a78bfa]/20 rounded-full px-3.5 py-1 mb-5 text-[11px] font-bold text-[#a78bfa] tracking-[0.6px] uppercase">
             <Shield size={11} /> Personal Protection
           </div>
           <h1 className="text-4xl font-extrabold text-[#f0f6ff] leading-tight mb-4">
@@ -84,19 +84,19 @@ const Personal = () => {
         <div className="border border-[#1c2d45] rounded-xl overflow-hidden mb-12">
           <div className="grid grid-cols-3 bg-[#0c1422] border-b border-[#1c2d45]">
             <div className="p-3 px-4 text-xs font-bold text-[#48607f] uppercase tracking-[0.6px]">Feature</div>
-            <div className="p-3 px-4 text-xs font-bold text-teal-300 uppercase tracking-[0.6px] text-center border-l border-[#1c2d45]">Free</div>
-            <div className="p-3 px-4 text-xs font-bold text-emerald-500 uppercase tracking-[0.6px] text-center border-l border-[#1c2d45]">Pro $4/mo</div>
+            <div className="p-3 px-4 text-xs font-bold text-[#c4b5fd] uppercase tracking-[0.6px] text-center border-l border-[#1c2d45]">Free</div>
+            <div className="p-3 px-4 text-xs font-bold text-[#7e67fe] uppercase tracking-[0.6px] text-center border-l border-[#1c2d45]">Pro $4/mo</div>
           </div>
 
           {([
             ["Detection rules",     "10 built-in",        "All 25 rules"],
-            ["Credit cards, SSNs",  <Check size={14} className="text-[#1ec890]" />, <Check size={14} className="text-[#1ec890]" />],
-            ["API keys & tokens",   <Check size={14} className="text-[#1ec890]" />, <Check size={14} className="text-[#1ec890]" />],
+            ["Credit cards, SSNs",  <Check size={14} className="text-[#6c5ce7]" />, <Check size={14} className="text-[#6c5ce7]" />],
+            ["API keys & tokens",   <Check size={14} className="text-[#6c5ce7]" />, <Check size={14} className="text-[#6c5ce7]" />],
             ["Block mode",          "Warn only",           "Hard block"],
             ["Custom patterns",     "—",                   "Coming soon"],
-            ["No dashboard needed", <Check size={14} className="text-[#1ec890]" />, <Check size={14} className="text-[#1ec890]" />],
-            ["Works offline",       <Check size={14} className="text-[#1ec890]" />, <Check size={14} className="text-[#1ec890]" />],
-            ["No data to servers",  <Check size={14} className="text-[#1ec890]" />, <Check size={14} className="text-[#1ec890]" />],
+            ["No dashboard needed", <Check size={14} className="text-[#6c5ce7]" />, <Check size={14} className="text-[#6c5ce7]" />],
+            ["Works offline",       <Check size={14} className="text-[#6c5ce7]" />, <Check size={14} className="text-[#6c5ce7]" />],
+            ["No data to servers",  <Check size={14} className="text-[#6c5ce7]" />, <Check size={14} className="text-[#6c5ce7]" />],
           ] as [React.ReactNode, React.ReactNode, React.ReactNode][]).map(([feature, free, pro], i) => (
             <div
               key={i}
@@ -104,7 +104,7 @@ const Personal = () => {
             >
               <div className="py-2.5 px-4 text-sm text-[#94b4d8]">{feature}</div>
               <div className="py-2.5 px-4 text-sm text-[#48607f] text-center border-l border-[#1c2d45] flex items-center justify-center">{free}</div>
-              <div className="py-2.5 px-4 text-sm text-emerald-300 text-center border-l border-[#1c2d45] flex items-center justify-center">{pro}</div>
+              <div className="py-2.5 px-4 text-sm text-[#c4b5fd] text-center border-l border-[#1c2d45] flex items-center justify-center">{pro}</div>
             </div>
           ))}
         </div>
@@ -112,10 +112,10 @@ const Personal = () => {
         {/* How it protects you */}
         <div className="grid grid-cols-2 gap-4 mb-12">
           {[
-            { icon: <Lock size={18} className="text-teal-400" />, title: "Runs locally", body: "Detection happens in your browser. No text is sent to SentraShield — ever." },
-            { icon: <Eye size={18} className="text-teal-400" />, title: "Invisible by design", body: "Silently active on every AI tool. You only see it when it stops a leak." },
-            { icon: <Zap size={18} className="text-teal-400" />, title: "Zero setup", body: "Install, optionally activate Pro with your key, and protection is immediate." },
-            { icon: <Shield size={18} className="text-teal-400" />, title: "25 detection rules", body: "Credit cards, SSNs, AWS keys, GitHub tokens, OpenAI keys, Stripe, and more." },
+            { icon: <Lock size={18} className="text-[#a78bfa]" />, title: "Runs locally", body: "Detection happens in your browser. No text is sent to SentraShield — ever." },
+            { icon: <Eye size={18} className="text-[#a78bfa]" />, title: "Invisible by design", body: "Silently active on every AI tool. You only see it when it stops a leak." },
+            { icon: <Zap size={18} className="text-[#a78bfa]" />, title: "Zero setup", body: "Install, optionally activate Pro with your key, and protection is immediate." },
+            { icon: <Shield size={18} className="text-[#a78bfa]" />, title: "25 detection rules", body: "Credit cards, SSNs, AWS keys, GitHub tokens, OpenAI keys, Stripe, and more." },
           ].map(({ icon, title, body }, i) => (
             <div key={i} className="bg-[#0c1422] border border-[#1c2d45] rounded-xl p-4">
               <div className="mb-2">{icon}</div>
@@ -126,7 +126,7 @@ const Personal = () => {
         </div>
 
         {/* CTA */}
-        <div className="bg-gradient-to-br from-[#0a1a1a] to-[#0c1422] border border-teal-400/20 rounded-2xl p-8">
+        <div className="bg-gradient-to-br from-[#0e0a1e] to-[#0c1422] border border-[#a78bfa]/20 rounded-2xl p-8">
           <h2 className="text-2xl font-extrabold text-[#f0f6ff] mb-1.5">
             Get SentraShield Pro
           </h2>
@@ -141,12 +141,12 @@ const Personal = () => {
               onChange={e => setEmail(e.target.value)}
               placeholder="your@email.com"
               required
-              className="flex-1 min-w-[200px] bg-gray-900 border border-[#1c2d45] rounded-lg px-3.5 py-2.5 text-[#dde9f8] text-sm outline-none focus:border-teal-400/50 transition-colors"
+              className="flex-1 min-w-[200px] bg-gray-900 border border-[#1c2d45] rounded-lg px-3.5 py-2.5 text-[#dde9f8] text-sm outline-none focus:border-[#a78bfa]/50 transition-colors"
             />
             <button
               type="submit"
               disabled={loading}
-              className="bg-teal-400 text-[#080c14] border-none rounded-lg px-6 py-2.5 text-sm font-bold whitespace-nowrap disabled:opacity-60 disabled:cursor-not-allowed hover:bg-teal-300 transition-colors"
+              className="bg-[#a78bfa] text-[#080c14] border-none rounded-lg px-6 py-2.5 text-sm font-bold whitespace-nowrap disabled:opacity-60 disabled:cursor-not-allowed hover:bg-[#c4b5fd] transition-colors"
             >
               {loading ? "Redirecting…" : "Get Pro →"}
             </button>
@@ -169,7 +169,7 @@ const Personal = () => {
               href="https://chrome.google.com/webstore"
               target="_blank"
               rel="noreferrer"
-              className="text-teal-400 hover:text-teal-300 transition-colors no-underline"
+              className="text-[#a78bfa] hover:text-[#c4b5fd] transition-colors no-underline"
             >
               Install from Chrome Web Store
             </a>

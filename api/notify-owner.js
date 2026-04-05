@@ -21,6 +21,23 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
+  // ── Anti-abuse: verify request originates from our own site ──
+  const origin  = req.headers['origin']  || '';
+  const referer = req.headers['referer'] || '';
+  const SITE_URL_CHECK = process.env.SITE_URL || 'https://sentrashield.com';
+  const allowedOrigins = [
+    SITE_URL_CHECK,
+    'https://ai-dlp.sentrashield.com',
+    'http://localhost:5173',       // local dev
+    'http://localhost:3000',
+  ];
+  const isAllowedOrigin = allowedOrigins.some(o =>
+    origin.startsWith(o) || referer.startsWith(o)
+  );
+  if (!isAllowedOrigin) {
+    return res.status(403).json({ error: 'Forbidden' });
+  }
+
   const {
     orgName, fullName, jobTitle, email, domain, slug,
     domainMismatch = false, isPersonalEmail = false,
@@ -42,7 +59,6 @@ export default async function handler(req, res) {
   const RESEND_API_KEY = process.env.RESEND_API_KEY;
   const RESEND_FROM    = process.env.RESEND_FROM    || 'SentraShield <noreply@sentrashield.com>';
   const OWNER_EMAIL    = process.env.OWNER_EMAIL    || 'admin@sentrashield.com';
-  const ADMIN_TOKEN    = process.env.ADMIN_TOKEN    || '';
   const SITE_URL       = process.env.SITE_URL       || 'https://sentrashield.com';
 
   if (!RESEND_API_KEY) {
@@ -51,10 +67,9 @@ export default async function handler(req, res) {
     return res.status(200).json({ ok: true, skipped: true });
   }
 
-  // Use hash fragment (#token=) instead of query string (?token=) so the secret
-  // never reaches the server, never appears in Vercel access logs, and is stripped
-  // from browser history automatically by the SPA cleanup below.
-  const adminUrl = `${SITE_URL}/admin#token=${encodeURIComponent(ADMIN_TOKEN)}`;
+  // Link to admin panel — token is NOT included in the email.
+  // The owner must authenticate separately when opening the admin panel.
+  const adminUrl = `${SITE_URL}/admin`;
 
   // Risk flags for the email
   const flags = [];
