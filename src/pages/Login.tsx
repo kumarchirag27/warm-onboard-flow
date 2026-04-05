@@ -73,7 +73,8 @@ const Login = () => {
 
         {/* Logo */}
         <Link to="/" className="mb-8 flex items-center justify-center">
-          <img src="/logo.png" alt="SentraShield" className="h-11 w-auto" />
+          <img src="/favicon.svg" alt="Sentra AI DLP" className="h-10 w-10" />
+            <span className="text-2xl font-bold tracking-tight bg-gradient-to-r from-white to-primary bg-clip-text text-transparent">Sentra AI DLP</span>
         </Link>
 
         {/* Card */}

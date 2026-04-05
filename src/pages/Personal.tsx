@@ -44,7 +44,8 @@ const Personal = () => {
       {/* Nav */}
       <nav className="border-b border-[#1c2d45] px-6 py-3.5 flex items-center justify-between">
         <a href="/" className="flex items-center">
-          <img src="/logo.png" alt="SentraShield" className="h-7 w-auto" />
+          <img src="/favicon.svg" alt="Sentra AI DLP" className="h-7 w-7" />
+          <span className="text-lg font-bold tracking-tight bg-gradient-to-r from-white to-primary bg-clip-text text-transparent ml-2">Sentra AI DLP</span>
         </a>
         <a href="/" className="text-xs text-[#48607f] hover:text-[#94b4d8] transition-colors">
           Enterprise →

@@ -252,7 +252,8 @@ const Signup = () => {
 
       <div className="relative z-10 w-full max-w-md px-6">
         <Link to="/" className="mb-8 flex items-center justify-center">
-          <img src="/logo.png" alt="SentraShield" className="h-11 w-auto" />
+          <img src="/favicon.svg" alt="Sentra AI DLP" className="h-10 w-10" />
+            <span className="text-2xl font-bold tracking-tight bg-gradient-to-r from-white to-primary bg-clip-text text-transparent ml-2.5">Sentra AI DLP</span>
         </Link>
 
         <div className="rounded-xl border border-border/50 card-gradient p-8">
